@@ -1,0 +1,12 @@
+ langchain 
+ langchain-community 
+ langchain_huggingface
+ beautifulsoup4 
+ faiss-cpu 
+ chromadb 
+ validators 
+ sentence_transformers 
+ typing-extensions
+ unstructured 
+ gradio
+ boto3
