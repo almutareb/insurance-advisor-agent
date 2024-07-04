@@ -1,36 +1,28 @@
-# Contributing to The Project
+# Pull Request Template
 
-We welcome contributions from everyone. To make the process as smooth as possible, please follow the guidelines below. 
+## Description
+Please include a brief description of the changes introduced by this PR.
 
-## How to Contribute
+## Related Issue(s)
+- If this PR addresses a particular issue, please reference it here using GitHub's linking syntax, e.g., "Fixes #123".
+- If there's no related issue, briefly explain the motivation behind these changes.
 
-### Code Contributions
+## Changes Made
+Please provide a list of the changes made in this PR.
 
-1. **Creating a Branch**: For any code contribution, start by creating a branch from the main project. The branch should be named using the pattern `#issue-id short-name-to-describe-what-is-added`. This helps in linking the contributions directly to the issues they are meant to resolve.
+## Screenshots (if applicable)
+If the changes include UI updates or visual changes, please attach relevant screenshots here.
 
-2. **Pull Requests**: Once you've made your changes, create a pull request (PR). Please fill out the pull request template with all the required information. This includes a summary of your changes and why they are necessary.
+## Checklist
+- [ ] I have tested my changes locally and ensured that they work as expected.
+- [ ] I have updated the documentation (if applicable).
+- [ ] My code follows the project's coding conventions and style guidelines.
+- [ ] I have added appropriate test cases (if applicable).
+- [ ] I have reviewed my own code to ensure its quality.
 
-3. **Review Process**: Every code contribution requires a review. A minimum of one maintainer must review and approve your contribution before it can be merged. This ensures quality and adherence to the project's standards. Please ensure your code is well-documented through comments and, if necessary, additional documentation files.
+## Additional Notes
+Add any additional notes or context about this PR here.
 
-4. **Testing**: Your code must be tested to ensure it works as expected and does not introduce new issues.
-
-### Reporting Issues
-
-When reporting issues, please use the provided issue template. Your report should include:
-
-- A clear, descriptive title
-- A detailed description of the issue
-- Steps to reproduce the issue
-- Logs, if applicable
-- Screenshots, if applicable
-
-This information is crucial in diagnosing and fixing the issue you're experiencing.
-
-### Suggestions
-
-We're always looking for new ideas to improve our project. If you have a suggestion, please:
-
-- Clearly describe your suggestion, including the purpose and intended outcome.
-- Explain why you believe this change would be beneficial to the project.
-
-We appreciate your contributions and look forward to collaborating with you!
+## Reviewer(s)
+- @reviewer1
+- @reviewer2
