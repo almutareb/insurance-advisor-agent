@@ -97,29 +97,31 @@ config = load_dotenv(".env")
 # Retrieve the Hugging Face API token from environment variables
 HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 S3_LOCATION = os.getenv("S3_LOCATION")
+S3_FILE_NAME = os.getenv("FAISS_VS_NAME")
+FAISS_INDEX_PATH = os.getenv("FAISS_INDEX_PATH")
 
-try:
-    # Initialize an S3 client with unsigned configuration for public access
-    s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
+# try:
+#     # Initialize an S3 client with unsigned configuration for public access
+#     s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
 
-    # Define the FAISS index path and the destination for the downloaded file
-    FAISS_INDEX_PATH = './vectorstore/lc-faiss-multi-mpnet-500-markdown'
-    VS_DESTINATION = FAISS_INDEX_PATH + ".zip"
+#     # Define the FAISS index path and the destination for the downloaded file
+#     #FAISS_INDEX_PATH = './vectorstore/lc-faiss-multi-mpnet-500-markdown'
+#     VS_DESTINATION = FAISS_INDEX_PATH + ".zip"
 
-    # Download the pre-prepared vectorized index from the S3 bucket
-    print("Downloading the pre-prepared vectorized index from S3...")
-    s3.download_file(S3_LOCATION, 'vectorstores/lc-faiss-multi-mpnet-500-markdown.zip', VS_DESTINATION)
+#     # Download the pre-prepared vectorized index from the S3 bucket
+#     print("Downloading the pre-prepared vectorized index from S3...")
+#     s3.download_file(S3_LOCATION, S3_FILE_NAME, VS_DESTINATION)
 
-    # Extract the downloaded zip file
-    with zipfile.ZipFile(VS_DESTINATION, 'r') as zip_ref:
-        zip_ref.extractall('./vectorstore/')
-    print("Download and extraction completed.")
+#     # Extract the downloaded zip file
+#     with zipfile.ZipFile(VS_DESTINATION, 'r') as zip_ref:
+#         zip_ref.extractall('./vectorstore/')
+#     print("Download and extraction completed.")
     
-except Exception as e:
-    print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)
+# except Exception as e:
+#     print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)
 
 # Define the model name for embeddings
-model_name = "sentence-transformers/multi-qa-mpnet-base-dot-v1"
+model_name = os.getenv("EMBEDDING_MODEL")
 
 try:
     # Initialize HuggingFace embeddings with the specified model
@@ -135,11 +137,13 @@ except Exception as e:
 from langchain_huggingface import HuggingFaceEndpoint
 
 # Initialize the vector store as a retriever for the RAG pipeline
-retriever = db.as_retriever(search_type="mmr", search_kwargs={'k': 3, 'lambda_mult': 0.25})
+retriever = db.as_retriever()#search_type="mmr", search_kwargs={'k': 3, 'lambda_mult': 0.25})
+
+llm_model = os.getenv("LLM_MODEL")
 
 try:
     # Load the model from the Hugging Face Hub
-    model_id = HuggingFaceEndpoint(repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1", 
+    model_id = HuggingFaceEndpoint(repo_id=llm_model, 
         temperature=0.1,         # Controls randomness in response generation (lower value means less random)
         max_new_tokens=1024,     # Maximum number of new tokens to generate in responses
         repetition_penalty=1.2,  # Penalty for repeating the same words (higher value increases penalty)
@@ -153,16 +157,19 @@ except Exception as e:
 
 # Importing necessary modules for retrieval-based question answering and prompt handling
 from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_core.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
+from langchain_core.output_parsers import StrOutputParser
 
 # Declare a global variable 'qa' for the retrieval-based question answering system
 global qa
 
 # Define a prompt template for guiding the model's responses
 template = """
-You are the friendly documentation buddy Arti, if you don't know the answer say 'I don't know' and don't make things up.\
-    Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question :
+You are a friendly insurance product advisor, your task is to help customers find the best products from Württembergische GmbH.\
+  You help the user find the answers to all his questions queries. Answer in short and simple terms and offer to explain the product and terms to the user.\
+    Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to help find the best product for the user:
 ------
 <ctx>
 {context}
@@ -200,10 +207,46 @@ qa = RetrievalQA.from_chain_type(
     }
 )
 
+def generate_qa_retriever(history: dict, question: str, llm_model:HuggingFaceEndpoint = model_id) -> dict:
+    """ Generare a response to queries using the retriever"""
+
+    # Define a prompt template for guiding the model's responses
+    template = """
+    You are a friendly insurance product advisor, your task is to help customers find the best products from Württembergische GmbH.\
+    You help the user find the answers to all his questions. Answer in short and simple terms and offer to explain the product and terms to the user.\
+    Respond only using the provided context (delimited by <ctx></ctx>) and only in German or Englisch, depending on the question's language.
+    Use the chat history (delimited by <hs></hs>) to help find the best product for the user:
+    ------
+    <ctx>
+    {context}
+    </ctx>
+    ------
+    <hs>
+    {history}
+    </hs>
+    ------
+    {question}
+    Answer:
+    """
+
+    # Create a PromptTemplate object with specified input variables and the defined template
+    prompt = PromptTemplate.from_template(
+        template=template,  # The prompt template as defined above
+    )
+    prompt.format(context="context", history="history", question="question")
+    # Create a memory buffer to manage conversation history
+    memory = ConversationBufferMemory(
+        memory_key="history",  # Key for storing the conversation history
+        input_key="question"  # Key for the input question
+    )
+    
+    llm_chain = prompt | llm_model
+    result = llm_chain.invoke({"context": retriever, "history": history, "question": question})
+    print(result)
+    return result
+
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
-import random
-import time
 
 # Function to add a new input to the chat history
 def add_text(history, text):
@@ -220,6 +263,7 @@ def bot(history):
     print_this = response['result'] + "\n\n\n Sources: \n\n\n" + src_list
 
 
+    #history[-1][1] = response #print_this #response['answer']
     history[-1][1] = print_this #response['answer']
     # Update the history with the bot's response
     #history[-1][1] = response['result']
@@ -228,7 +272,9 @@ def bot(history):
 # Function to infer the response using the RAG model
 def infer(question, history):
     # Use the question and history to query the RAG model
+    #result = generate_qa_retriever(history, question)
     result = qa({"query": question, "history": history, "question": question})
+    print(*result)
     return result
 
 # CSS styling for the Gradio interface
@@ -238,18 +284,20 @@ css = """
 
 # HTML content for the Gradio interface title
 title = """
-<div style="text-align: center;max-width: 700px;">
-    <h1>Chat with your Documentation</h1>
-    <p style="text-align: center;">Chat with LangChain Documentation, <br />
-    You can ask questions about the LangChain docu ;)</p>
+<div style="text-align:left;">
+    <p>Hello, I BotTina 2.0, your intelligent AI assistant. I can help you explore Wuerttembergische Versicherungs products.<br />
 </div>
 """
 
 # Building the Gradio interface
-with gr.Blocks(css=css) as demo:
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Column(elem_id="col-container"):
         gr.HTML(title)  # Add the HTML title to the interface
-        chatbot = gr.Chatbot([], elem_id="chatbot")  # Initialize the chatbot component
+        chatbot = gr.Chatbot([], elem_id="chatbot",
+                                    label="BotTina 2.0",
+                                     bubble_full_width=False,
+                                     avatar_images=(None, "https://dacodi-production.s3.amazonaws.com/store/87bc00b6727589462954f2e3ff6f531c.png"),
+                                     height=680,)  # Initialize the chatbot component
         clear = gr.Button("Clear")  # Add a button to clear the chat
 
         # Create a row for the question input
@@ -264,4 +312,4 @@ with gr.Blocks(css=css) as demo:
     clear.click(lambda: None, None, chatbot, queue=False)
 
 # Launch the Gradio demo interface
-demo.launch(share=False)
+demo.launch(debug=True)
