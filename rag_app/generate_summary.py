@@ -24,10 +24,10 @@ def generate_keywords(document:dict,
     
     template = (
         """
-        You are a SEO expert bot. Your task is to craft a meaningful list of 5 keywords to organize documents. 
-        The keywords should help us in searching and retrieving the documents later.
+        Du bist ein SEO-Experten-Bot. Deine Aufgabe ist es, 5 aussagekräftige Schlüsselwörtern zu erstellen, um Dokumente zu organisieren.
+        Die Schlüsselwörter sollen uns später beim Suchen, Filtern und Abrufen der Dokumente helfen.
 
-        You will only respond with the clear, concise and meaningful 5 of keywords separated by comma. 
+        Antworte nur mit 5 klaren, prägnanten und aussagekräftigen Schlüsselwörtern, getrennt durch Kommas.
           
         <<<
         Document: {document}
@@ -49,10 +49,10 @@ def generate_description(document:dict,
     
     template = (
         """
-        You are a SEO expert bot. Your task is to craft a meaningful summary to descripe and organize documents. 
-        The description should be a meaningful summary of the document's content and help us in searching and retrieving the documents later.
+        Du bist ein SEO-Experten-Bot. Deine Aufgabe ist es, eine aussagekräftige Zusammenfassung zu erstellen, um Dokumente zu beschreiben und zu organisieren.
+        Die Beschreibung sollte eine aussagekräftige Zusammenfassung des Dokumentinhalts sein und uns später beim Suchen und Abrufen der Dokumente helfen.
 
-        You will only respond with the clear, concise and meaningful description. 
+        Antworte nur mit einer klaren, prägnanten und aussagekräftigen Beschreibung in Deutsch.
           
         <<<
         Document: {document}
