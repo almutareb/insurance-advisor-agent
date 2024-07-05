@@ -29,11 +29,11 @@ def build_vector_store(
         FAISS_INDEX_PATH = db_path
 
     embeddings,chunks = create_embeddings(docs, chunk_size, chunk_overlap, embedding_model)
-    for chunk in chunks:
-        keywords=generate_keywords(chunk)
-        description=generate_description(chunk)
-        chunk.metadata['chunk_keywords']=keywords
-        chunk.metadata['chunk_description']=description
+    # for chunk in chunks:
+    #     keywords=generate_keywords(chunk)
+    #     description=generate_description(chunk)
+    #     chunk.metadata['keywords']=keywords
+    #     chunk.metadata['description']=description
 
     #load chunks into vector store
     print(f'Loading chunks into faiss vector store ...')
