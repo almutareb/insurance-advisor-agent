@@ -52,7 +52,7 @@ def memory_search(query:str) -> str:
 
 @tool
 def knowledgeBase_search(query:str) -> str:
-    """Search the internal knowledge base for research papers and relevent chunks"""
+    """Suche die interne Datenbank nach passenden Versicherungsprodukten und Informationen zu den Versicherungen"""
     # Since we have more than one collections we should change the name of this tool
     client = chromadb.PersistentClient(
      path=persist_directory,
@@ -82,7 +82,7 @@ def knowledgeBase_search(query:str) -> str:
 
 @tool
 def google_search(query: str) -> str:
-    """Search Google for additional results when you can't answer questions using arxiv search or wikipedia search."""
+    """Verbessere die Ergebnisse durch eine Suche über die Webseite der Versicherung. Erstelle eine neue Suchanfrage, um die Erfolgschancen zu verbesseren."""
     global all_sources
     
     websearch = GoogleSearchAPIWrapper()

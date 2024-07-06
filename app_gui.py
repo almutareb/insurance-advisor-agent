@@ -1,6 +1,6 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
-from rag_app.react_agent import agent_executor
+from rag_app.agents.react_agent import agent_executor
 # need to import the qa!
 
 # Function to add a new input to the chat history

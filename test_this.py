@@ -1,7 +1,9 @@
 from rag_app.loading_data.load_urls_recurisvely import load_docs_from_urls
-from rag_app.create_embedding import create_embeddings
-from rag_app.generate_summary import generate_description, generate_keywords
-from rag_app.build_vector_store import build_vector_store
+from rag_app.knowledge_base.create_embedding import create_embeddings
+from rag_app.utils.generate_summary import generate_description, generate_keywords
+from rag_app.knowledge_base.build_vector_store import build_vector_store
+from rag_app.loading_data.scrap_website import scrap_website
+from rag_app.loading_data.load_S3_vector_stores import get_chroma_vs, get_faiss_vs
 
 # 1. load the urls
 # 2. build the vectorstore -> the function will create the chunking and embeddings
@@ -22,6 +24,7 @@ from rag_app.build_vector_store import build_vector_store
 
 # print(create_embeddings(docs))
 
-from rag_app.loading_data.scrap_website import scrap_website
 
-print(scrap_website(target_url='https://www.wuerttembergische.de/',depth=1))
+#print(scrap_website(target_url='https://www.wuerttembergische.de/',depth=1))
+get_faiss_vs()
+#get_chroma_vs()
