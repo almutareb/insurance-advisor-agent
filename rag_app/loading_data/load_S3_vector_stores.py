@@ -40,14 +40,14 @@ def get_faiss_vs():
     VS_DESTINATION = FAISS_INDEX_PATH + ".zip"
     try:
         # Download the pre-prepared vectorized index from the S3 bucket
-        print("Downloading the pre-prepared vectorized index from S3...")
+        print("Downloading the pre-prepared FAISS vectorized index from S3...")
         s3.download_file(S3_LOCATION, FAISS_VS_NAME, VS_DESTINATION)
 
         # Extract the downloaded zip file
         with zipfile.ZipFile(VS_DESTINATION, 'r') as zip_ref:
             zip_ref.extractall('./vectorstore/')
         print("Download and extraction completed.")
-        return FAISS.load_local(FAISS_INDEX_PATH, embeddings)
+        return FAISS.load_local(FAISS_INDEX_PATH, embeddings,allow_dangerous_deserialization=True)
         
     except Exception as e:
         print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)
@@ -61,9 +61,12 @@ def get_chroma_vs():
 
     VS_DESTINATION = CHROMA_DIRECTORY+".zip"
     try:
+        # Download the pre-prepared vectorized index from the S3 bucket
+        print("Downloading the pre-prepared chroma vectorstore from S3...")
         s3.download_file(S3_LOCATION, CHROMA_VS_NAME, VS_DESTINATION)
         with zipfile.ZipFile(VS_DESTINATION, 'r') as zip_ref:
             zip_ref.extractall('./vectorstore/')
+        print("Download and extraction completed.")
         chromadb = Chroma(persist_directory=CHROMA_DIRECTORY, embedding_function=embeddings)
         chromadb.get()
     except Exception as e:
