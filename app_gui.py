@@ -1,5 +1,6 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
+from rag_app.react_agent import agent_executor
 # need to import the qa!
 
 # Function to add a new input to the chat history
@@ -12,20 +13,27 @@ def add_text(history, text):
 def bot(history):
     # Obtain the response from the 'infer' function using the latest input
     response = infer(history[-1][0], history)
-    sources = [doc.metadata.get("source") for doc in response['source_documents']]
-    src_list = '\n'.join(sources)
-    print_this = response['result'] + "\n\n\n Sources: \n\n\n" + src_list
+    #sources = [doc.metadata.get("source") for doc in response['source_documents']]
+    #src_list = '\n'.join(sources)
+    #print_this = response['result'] + "\n\n\n Sources: \n\n\n" + src_list
 
 
-    history[-1][1] = print_this #response['answer']
+    #history[-1][1] = print_this #response['answer']
     # Update the history with the bot's response
-    #history[-1][1] = response['result']
+    print(*response)
+    history[-1][1] = response['output']
     return history
 
 # Function to infer the response using the RAG model
 def infer(question, history):
     # Use the question and history to query the RAG model
-    result = qa({"query": question, "history": history, "question": question})
+    #result = qa({"query": question, "history": history, "question": question})
+    result = agent_executor.invoke(
+        {
+            "input": question,
+            "chat_history": history
+        }
+    )
     return result
 
 # CSS styling for the Gradio interface

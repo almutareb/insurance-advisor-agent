@@ -2,12 +2,16 @@
  langchain-community 
  langchain-HuggingFace
  langchain-text-splitters
+ langchain_google_community
  beautifulsoup4 
  faiss-cpu 
  chromadb 
  validators 
  sentence_transformers 
  typing-extensions
- unstructured 
+ unstructured
+ unstructured[pdf]
  gradio
  boto3
+ rich
+ sqlmodel
