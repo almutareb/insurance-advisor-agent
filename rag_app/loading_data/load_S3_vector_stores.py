@@ -5,7 +5,9 @@ from botocore.client import Config
 import zipfile
 from langchain_community.vectorstores import FAISS
 from langchain_community.vectorstores import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings.sentence_transformer import (
+    SentenceTransformerEmbeddings,
+)
 from dotenv import load_dotenv
 import os
 import sys
@@ -26,10 +28,7 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 model_name = EMBEDDING_MODEL
 #model_kwargs = {"device": "cuda"}
 
-embeddings = HuggingFaceEmbeddings(
-    model_name=model_name,
-#    model_kwargs=model_kwargs
-    )
+embeddings = SentenceTransformerEmbeddings(model_name=model_name)
 
 ## FAISS
 def get_faiss_vs():
@@ -68,6 +67,6 @@ def get_chroma_vs():
             zip_ref.extractall('./vectorstore/')
         print("Download and extraction completed.")
         chromadb = Chroma(persist_directory=CHROMA_DIRECTORY, embedding_function=embeddings)
-        chromadb.get()
+        #chromadb.get()
     except Exception as e:
         print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)

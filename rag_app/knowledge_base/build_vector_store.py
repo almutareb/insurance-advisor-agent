@@ -6,6 +6,7 @@ from langchain_community.vectorstores import Chroma
 #from langchain_community.embeddings.sentence_transformer import (
 #    SentenceTransformerEmbeddings,
 #)
+#from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from rag_app.knowledge_base.create_embedding import create_embeddings
 from rag_app.utils.generate_summary import generate_description, generate_keywords

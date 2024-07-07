@@ -20,7 +20,6 @@ def bot(history):
 
     #history[-1][1] = print_this #response['answer']
     # Update the history with the bot's response
-    print(*response)
     history[-1][1] = response['output']
     return history
 
@@ -53,9 +52,10 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Column(elem_id="col-container"):
         gr.HTML(title)  # Add the HTML title to the interface
         chatbot = gr.Chatbot([], elem_id="chatbot",
-                                     bubble_full_width=False,
-                                     avatar_images=(None, "https://dacodi-production.s3.amazonaws.com/store/87bc00b6727589462954f2e3ff6f531c.png"),
-                                     height=680,)  # Initialize the chatbot component
+                                    label="BotTina 2.0",
+                                    bubble_full_width=False,
+                                    avatar_images=(None, "https://dacodi-production.s3.amazonaws.com/store/87bc00b6727589462954f2e3ff6f531c.png"),
+                                    height=680,)  # Initialize the chatbot component
         clear = gr.Button("Clear")  # Add a button to clear the chat
 
         # Create a row for the question input

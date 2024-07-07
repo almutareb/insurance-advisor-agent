@@ -24,9 +24,10 @@ config = load_dotenv(".env")
 HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+LLM_MODEL = os.getenv('LLM_MODEL')
 
 # Load the model from the Hugging Face Hub
-llm = HuggingFaceEndpoint(repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1", 
+llm = HuggingFaceEndpoint(repo_id=LLM_MODEL, 
                           temperature=0.1, 
                           max_new_tokens=1024,
                           repetition_penalty=1.2,
@@ -68,6 +69,6 @@ agent_worker = AgentExecutor(
     verbose=True,
     max_iterations=10,       # cap number of iterations
     #max_execution_time=60,  # timout at 60 sec
-    #return_intermediate_steps=True,
+    return_intermediate_steps=True,
     handle_parsing_errors=True,
     )
