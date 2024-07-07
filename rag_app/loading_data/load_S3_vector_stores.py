@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import os
 import sys
 import logging
+from pathlib import Path
 
 # Load environment variables from a .env file
 config = load_dotenv(".env")
@@ -38,6 +39,7 @@ def get_faiss_vs():
 
     # Define the destination for the downloaded file
     VS_DESTINATION = FAISS_INDEX_PATH + ".zip"
+    
     try:
         # Download the pre-prepared vectorized index from the S3 bucket
         print("Downloading the pre-prepared FAISS vectorized index from S3...")
@@ -51,7 +53,32 @@ def get_faiss_vs():
         
     except Exception as e:
         print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)
-    #faissdb = FAISS.load_local(FAISS_INDEX_PATH, embeddings)
+    # faissdb = FAISS.load_local(FAISS_INDEX_PATH, embeddings)
+
+
+def get_faiss_vs_from_s3(s3_loc:str, 
+                         s3_vs_name:str,
+                         vs_dir:str='vectorstore') -> None:
+    """ Download the FAISS vector store from S3 bucket
+
+        Args:
+            s3_loc (str): Name of the S3 bucket
+            s3_vs_name (str): Name of the file to be downloaded
+            vs_dir (str): The name of the directory where the file is to be saved
+    """
+    # Initialize an S3 client with unsigned configuration for public access
+    s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
+    # Destination folder
+    vs_dir_path = Path("..") / vs_dir
+    assert vs_dir_path.is_dir(), "Cannot find vs_dir folder"
+    try:
+        vs_destination = Path("..") / vs_dir / "faiss-insurance-agent-500.zip"
+        s3.download_file(s3_loc, s3_vs_name, vs_destination)
+        # Extract the downloaded zip file
+        with zipfile.ZipFile(file=vs_destination, mode='r') as zip_ref:
+            zip_ref.extractall(path=vs_dir_path.as_posix())
+    except Exception as e:
+        print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)
 
 
 ## Chroma DB
@@ -71,3 +98,9 @@ def get_chroma_vs():
         chromadb.get()
     except Exception as e:
         print(f"Error during downloading or extracting from S3: {e}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    # get_faiss_vs_from_s3(s3_loc=S3_LOCATION, s3_vs_name=FAISS_VS_NAME)
+    pass
+    
