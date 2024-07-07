@@ -1,15 +1,17 @@
 # vectorization functions
 from langchain_community.vectorstores import FAISS
 from langchain_community.vectorstores import Chroma
-from langchain_community.document_loaders import ReadTheDocsLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+#from langchain_community.document_loaders import DirectoryLoader
+#from langchain_text_splitters import RecursiveCharacterTextSplitter
+#from langchain_community.embeddings.sentence_transformer import (
+#    SentenceTransformerEmbeddings,
+#)
 from langchain_community.retrievers import BM25Retriever
-from rag_app.create_embedding import create_embeddings
-from rag_app.generate_summary import generate_description, generate_keywords
+from rag_app.knowledge_base.create_embedding import create_embeddings
+from rag_app.utils.generate_summary import generate_description, generate_keywords
 import time
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 def build_vector_store(
         docs: list, 

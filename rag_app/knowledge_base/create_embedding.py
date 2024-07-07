@@ -3,7 +3,10 @@
 #from langchain_community.document_loaders import ReadTheDocsLoader
 #from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+# from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings.sentence_transformer import (
+    SentenceTransformerEmbeddings,
+)
 import time
 from langchain_core.documents import Document
 
@@ -44,7 +47,8 @@ def create_embeddings(
     print(f'Time taken to chunk {len(docs)} documents: {et} seconds.')
 
     #Stage two: embed the docs.
-    embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
+    #embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
+    embeddings = SentenceTransformerEmbeddings(model_name=embedding_model)
     print(f"created a total of {len(chunks)} chunks")
 
     return embeddings,chunks

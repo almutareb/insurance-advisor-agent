@@ -2,9 +2,9 @@
 
 # HF libraries
 from langchain.llms import HuggingFaceHub
-from langchain.embeddings import HuggingFaceHubEmbeddings
+from langchain_huggingface import HuggingFaceHubEmbeddings
 # vectorestore
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 # retrieval chain
 from langchain.chains import RetrievalQA
 # prompt template

@@ -274,7 +274,7 @@ def infer(question, history):
     # Use the question and history to query the RAG model
     #result = generate_qa_retriever(history, question)
     result = qa({"query": question, "history": history, "question": question})
-    print(*result)
+    #print(*result)
     return result
 
 # CSS styling for the Gradio interface
