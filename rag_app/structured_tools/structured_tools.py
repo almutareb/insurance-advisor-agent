@@ -17,6 +17,7 @@ from rag_app.utils.utils import (
 from rag_app.database.db_handler import (
     add_many
 )
+from rag_app.agents.kb_retriever_agent import agent_executor
 
 import os
 # from innovation_pathfinder_ai.utils import create_wikipedia_urls_from_text
@@ -71,7 +72,7 @@ def knowledgeBase_search(query:str) -> str:
     embedding_function=embedding_function,
     )
     
-    retriever = vector_db.as_retriever()
+    retriever = vector_db.as_retriever(search_kwargs={'k':1})
     # This is deprecated, changed to invoke
     # LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
     docs = retriever.invoke(query)
@@ -83,7 +84,6 @@ def knowledgeBase_search(query:str) -> str:
 @tool
 def google_search(query: str) -> str:
     """Verbessere die Ergebnisse durch eine Suche über die Webseite der Versicherung. Erstelle eine neue Suchanfrage, um die Erfolgschancen zu verbesseren."""
-    global all_sources
     
     websearch = GoogleSearchAPIWrapper()
     search_results:dict = websearch.results(query, 3)
@@ -96,3 +96,15 @@ def google_search(query: str) -> str:
         cleaner_sources = search_results
     
     return cleaner_sources.__str__()
+
+@tool
+def web_research(query: str) -> str:
+    """Verbessere die Ergebnisse durch eine Suche über die Webseite der Versicherung. Erstelle eine neue Suchanfrage, um die Erfolgschancen zu verbesseren."""
+    
+    result = agent_executor.invoke(
+        {
+            "input": query
+        }
+    )
+    print(result)
+    return result.__str__()

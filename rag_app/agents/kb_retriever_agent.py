@@ -8,8 +8,7 @@ from langchain.tools.render import render_text_description
 import os
 from dotenv import load_dotenv
 from rag_app.structured_tools.structured_tools import (
-    #google_search, knowledgeBase_search, 
-    web_research
+    google_search, knowledgeBase_search
 )
 
 from langchain.prompts import PromptTemplate
@@ -25,10 +24,6 @@ config = load_dotenv(".env")
 HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-# LANGCHAIN_TRACING_V2 = "true"
-# LANGCHAIN_ENDPOINT = "https://api.smith.langchain.com"
-# LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
-# LANGCHAIN_PROJECT = os.getenv('LANGCHAIN_PROJECT')
 
 # Load the model from the Hugging Face Hub
 llm = HuggingFaceEndpoint(repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1", 
@@ -40,9 +35,8 @@ llm = HuggingFaceEndpoint(repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
 
 
 tools = [
-    #knowledgeBase_search,
-    #google_search,
-    web_research
+    knowledgeBase_search,
+    google_search,
     ]
 
 prompt = PromptTemplate.from_template(
@@ -60,7 +54,7 @@ agent = (
     {
         "input": lambda x: x["input"],
         "agent_scratchpad": lambda x: format_log_to_str(x["intermediate_steps"]),
-        "chat_history": lambda x: x["chat_history"],
+        #"chat_history": lambda x: x["chat_history"],
     }
     | prompt
     | chat_model_with_stop
@@ -74,6 +68,6 @@ agent_executor = AgentExecutor(
     verbose=True,
     max_iterations=10,       # cap number of iterations
     #max_execution_time=60,  # timout at 60 sec
-    return_intermediate_steps=True,
+    #return_intermediate_steps=True,
     handle_parsing_errors=True,
     )
