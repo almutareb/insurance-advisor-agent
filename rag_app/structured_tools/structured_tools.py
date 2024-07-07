@@ -17,7 +17,6 @@ from rag_app.utils.utils import (
 from rag_app.database.db_handler import (
     add_many
 )
-from rag_app.agents.kb_retriever_agent import agent_executor
 
 import os
 # from innovation_pathfinder_ai.utils import create_wikipedia_urls_from_text
@@ -96,15 +95,3 @@ def google_search(query: str) -> str:
         cleaner_sources = search_results
     
     return cleaner_sources.__str__()
-
-@tool
-def web_research(query: str) -> str:
-    """Verbessere die Ergebnisse durch eine Suche über die Webseite der Versicherung. Erstelle eine neue Suchanfrage, um die Erfolgschancen zu verbesseren."""
-    
-    result = agent_executor.invoke(
-        {
-            "input": query
-        }
-    )
-    print(result)
-    return result.__str__()

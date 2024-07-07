@@ -12,7 +12,7 @@ from rag_app.structured_tools.structured_tools import (
 )
 
 from langchain.prompts import PromptTemplate
-from rag_app.templates.react_json_with_memory import template_system
+from rag_app.templates.react_json_ger import template_system
 # from innovation_pathfinder_ai.utils import logger
 # from langchain.globals import set_llm_cache
 # from langchain.cache import SQLiteCache
@@ -62,7 +62,7 @@ agent = (
 )
 
 # instantiate AgentExecutor
-agent_executor = AgentExecutor(
+agent_worker = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True,

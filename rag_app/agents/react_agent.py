@@ -7,8 +7,7 @@ from langchain.agents.output_parsers import ReActJsonSingleInputOutputParser
 from langchain.tools.render import render_text_description
 import os
 from dotenv import load_dotenv
-from rag_app.structured_tools.structured_tools import (
-    #google_search, knowledgeBase_search, 
+from rag_app.structured_tools.agent_tools import (
     web_research
 )
 

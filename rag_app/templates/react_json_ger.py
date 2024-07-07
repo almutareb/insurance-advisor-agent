@@ -34,11 +34,6 @@ Final Answer: the final answer to the original input question
 
 Begin! Reminder to always use the exact characters `Final Answer` when responding.
 
-Previous conversation history:
-<CONVERSATION_HISTORY>
-{chat_history}
-</CONVERSATION_HISTORY>
-
 <NEW_INPUT>
 {input}
 </NEW_INPUT>
