@@ -22,6 +22,7 @@ import os
 # from innovation_pathfinder_ai.utils import create_wikipedia_urls_from_text
 
 persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
+embedding_model = os.getenv("EMBEDDING_MODEL")
 
 @tool
 def memory_search(query:str) -> str:
@@ -36,7 +37,7 @@ def memory_search(query:str) -> str:
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=os.getenv("EMBEDDING_MODEL"),
+        model_name=embedding_model,
         )
     
     vector_db = Chroma(
@@ -62,7 +63,7 @@ def knowledgeBase_search(query:str) -> str:
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=os.getenv("EMBEDDING_MODEL"),
+        model_name=embedding_model
         )
     
     # vector_db = Chroma(
@@ -87,11 +88,11 @@ def google_search(query: str) -> str:
     websearch = GoogleSearchAPIWrapper()
     search_results:dict = websearch.results(query, 3)
     print(search_results)
-    # if len(search_results)>1:
-    #     cleaner_sources =format_search_results(search_results)
-    #     parsed_csources = parse_list_to_dicts(cleaner_sources)
-    #     add_many(parsed_csources)
-    # else:
-    #     cleaner_sources = search_results
+    if len(search_results)>1:
+        cleaner_sources =format_search_results(search_results)
+        parsed_csources = parse_list_to_dicts(cleaner_sources)
+        add_many(parsed_csources)
+    else:
+        cleaner_sources = search_results
     
     return cleaner_sources.__str__()

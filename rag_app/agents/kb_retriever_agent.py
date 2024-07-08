@@ -13,9 +13,7 @@ from rag_app.structured_tools.structured_tools import (
 
 from langchain.prompts import PromptTemplate
 from rag_app.templates.react_json_ger import template_system
-# from innovation_pathfinder_ai.utils import logger
-# from langchain.globals import set_llm_cache
-# from langchain.cache import SQLiteCache
+# from rag_app.utils import logger
 
 # set_llm_cache(SQLiteCache(database_path=".cache.db"))
 # logger = logger.get_console_logger("hf_mixtral_agent")

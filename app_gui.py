@@ -27,13 +27,16 @@ def bot(history):
 def infer(question, history):
     # Use the question and history to query the RAG model
     #result = qa({"query": question, "history": history, "question": question})
-    result = agent_executor.invoke(
-        {
-            "input": question,
-            "chat_history": history
-        }
-    )
-    return result
+    try:
+        result = agent_executor.invoke(
+            {
+                "input": question,
+                "chat_history": history
+            }
+        )
+        return result
+    except Exception:
+        raise gr.Error("Model is Overloaded, Please retry later!")
 
 # CSS styling for the Gradio interface
 css = """

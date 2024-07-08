@@ -8,7 +8,7 @@ from langchain.tools.render import render_text_description
 import os
 from dotenv import load_dotenv
 from rag_app.structured_tools.agent_tools import (
-    web_research
+    web_research, ask_user, get_email
 )
 
 from langchain.prompts import PromptTemplate
@@ -42,7 +42,9 @@ llm = HuggingFaceEndpoint(repo_id=LLM_MODEL,
 tools = [
     #knowledgeBase_search,
     #google_search,
-    web_research
+    web_research,
+    ask_user,
+    get_email
     ]
 
 prompt = PromptTemplate.from_template(
