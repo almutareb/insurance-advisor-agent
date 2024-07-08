@@ -7,15 +7,13 @@ from langchain.agents.output_parsers import ReActJsonSingleInputOutputParser
 from langchain.tools.render import render_text_description
 import os
 from dotenv import load_dotenv
-from rag_app.structured_tools.agent_tools import (
-    web_research, ask_user, get_email
+from rag_app.structured_tools.structured_tools import (
+    google_search, knowledgeBase_search
 )
 
 from langchain.prompts import PromptTemplate
-from rag_app.templates.react_json_with_memory_ger import template_system
-# from innovation_pathfinder_ai.utils import logger
-# from langchain.globals import set_llm_cache
-# from langchain.cache import SQLiteCache
+from rag_app.templates.react_json_ger import template_system
+# from rag_app.utils import logger
 
 # set_llm_cache(SQLiteCache(database_path=".cache.db"))
 # logger = logger.get_console_logger("hf_mixtral_agent")
@@ -25,10 +23,6 @@ HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 LLM_MODEL = os.getenv('LLM_MODEL')
-# LANGCHAIN_TRACING_V2 = "true"
-# LANGCHAIN_ENDPOINT = "https://api.smith.langchain.com"
-# LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
-# LANGCHAIN_PROJECT = os.getenv('LANGCHAIN_PROJECT')
 
 # Load the model from the Hugging Face Hub
 llm = HuggingFaceEndpoint(repo_id=LLM_MODEL, 
@@ -40,11 +34,8 @@ llm = HuggingFaceEndpoint(repo_id=LLM_MODEL,
 
 
 tools = [
-    #knowledgeBase_search,
-    #google_search,
-    web_research,
-    ask_user,
-    get_email
+    knowledgeBase_search,
+    google_search,
     ]
 
 prompt = PromptTemplate.from_template(
@@ -62,7 +53,7 @@ agent = (
     {
         "input": lambda x: x["input"],
         "agent_scratchpad": lambda x: format_log_to_str(x["intermediate_steps"]),
-        "chat_history": lambda x: x["chat_history"],
+        #"chat_history": lambda x: x["chat_history"],
     }
     | prompt
     | chat_model_with_stop
@@ -70,7 +61,7 @@ agent = (
 )
 
 # instantiate AgentExecutor
-agent_executor = AgentExecutor(
+agent_worker = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True,

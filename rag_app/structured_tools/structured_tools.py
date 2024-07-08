@@ -22,6 +22,7 @@ import os
 # from innovation_pathfinder_ai.utils import create_wikipedia_urls_from_text
 
 persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
+embedding_model = os.getenv("EMBEDDING_MODEL")
 
 @tool
 def memory_search(query:str) -> str:
@@ -36,7 +37,7 @@ def memory_search(query:str) -> str:
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=os.getenv("EMBEDDING_MODEL"),
+        model_name=embedding_model,
         )
     
     vector_db = Chroma(
@@ -54,24 +55,24 @@ def memory_search(query:str) -> str:
 def knowledgeBase_search(query:str) -> str:
     """Suche die interne Datenbank nach passenden Versicherungsprodukten und Informationen zu den Versicherungen"""
     # Since we have more than one collections we should change the name of this tool
-    client = chromadb.PersistentClient(
-     path=persist_directory,
-    )
+    # client = chromadb.PersistentClient(
+    #  path=persist_directory,
+    # )
     
     #collection_name="ArxivPapers"
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=os.getenv("EMBEDDING_MODEL"),
+        model_name=embedding_model
         )
     
-    vector_db = Chroma(
-    client=client, # client for Chroma
-    #collection_name=collection_name,
-    embedding_function=embedding_function,
-    )
-    
-    retriever = vector_db.as_retriever()
+    # vector_db = Chroma(
+    # client=client, # client for Chroma
+    # #collection_name=collection_name,
+    # embedding_function=embedding_function,
+    # )
+    vector_db = Chroma(persist_directory=persist_directory, embedding_function=embedding_function)
+    retriever = vector_db.as_retriever(search_type="mmr", search_kwargs={'k':5, 'fetch_k':10})
     # This is deprecated, changed to invoke
     # LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
     docs = retriever.invoke(query)
@@ -83,7 +84,6 @@ def knowledgeBase_search(query:str) -> str:
 @tool
 def google_search(query: str) -> str:
     """Verbessere die Ergebnisse durch eine Suche über die Webseite der Versicherung. Erstelle eine neue Suchanfrage, um die Erfolgschancen zu verbesseren."""
-    global all_sources
     
     websearch = GoogleSearchAPIWrapper()
     search_results:dict = websearch.results(query, 3)

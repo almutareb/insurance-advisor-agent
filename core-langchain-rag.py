@@ -39,7 +39,7 @@ import time
 # import time
 # from langchain_community.vectorstores import FAISS
 # from langchain.vectorstores.utils import filter_complex_metadata
-# from langchain_community.embeddings import HuggingFaceEmbeddings
+# from langchain_huggingface import HuggingFaceEmbeddings
 
 # # Configure the text splitter
 # text_splitter = RecursiveCharacterTextSplitter(
