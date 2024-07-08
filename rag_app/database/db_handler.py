@@ -17,6 +17,15 @@ SQLModel.metadata.create_all(engine)
 
 
 def read_one(hash_id: dict):
+    """
+    Read a single entry from the database by its hash_id.
+
+    Args:
+        hash_id (dict): Dictionary containing the hash_id to search for.
+
+    Returns:
+        Sources: The matching entry from the database, or None if no match is found.
+    """
     with Session(engine) as session:
         statement = select(Sources).where(Sources.hash_id == hash_id)
         sources = session.exec(statement).first()
@@ -24,6 +33,15 @@ def read_one(hash_id: dict):
 
 
 def add_one(data: dict):
+    """
+    Add a single entry to the database.
+
+    Args:
+        data (dict): Dictionary containing the data for the new entry.
+
+    Returns:
+        Sources: The added entry, or None if the entry already exists.
+    """
     with Session(engine) as session:
         if session.exec(
             select(Sources).where(Sources.hash_id == data.get("hash_id"))
@@ -39,6 +57,16 @@ def add_one(data: dict):
 
 
 def update_one(hash_id: dict, data: dict):
+    """
+    Update a single entry in the database by its hash_id.
+
+    Args:
+        hash_id (dict): Dictionary containing the hash_id to search for.
+        data (dict): Dictionary containing the updated data for the entry.
+
+    Returns:
+        Sources: The updated entry, or None if no match is found.
+    """
     with Session(engine) as session:
         # Check if the item with the given hash_id exists
         sources = session.exec(
@@ -55,6 +83,15 @@ def update_one(hash_id: dict, data: dict):
 
 
 def delete_one(id: int):
+    """
+    Delete a single entry from the database by its id.
+
+    Args:
+        id (int): The id of the entry to delete.
+
+    Returns:
+        None
+    """
     with Session(engine) as session:
         # Check if the item with the given hash_id exists
         sources = session.exec(
@@ -69,6 +106,15 @@ def delete_one(id: int):
 
 
 def add_many(data: list):
+    """
+    Add multiple entries to the database.
+
+    Args:
+        data (list): List of dictionaries, each containing the data for a new entry.
+
+    Returns:
+        None
+    """
     with Session(engine) as session:
         for info in data:
             # Reuse add_one function for each item
@@ -85,6 +131,15 @@ def add_many(data: list):
 
 
 def delete_many(ids: list):
+    """
+    Delete multiple entries from the database by their ids.
+
+    Args:
+        ids (list): List of ids of the entries to delete.
+
+    Returns:
+        None
+    """
     with Session(engine) as session:
         for id in ids:
             # Reuse delete_one function for each item
@@ -97,6 +152,15 @@ def delete_many(ids: list):
 
 
 def read_all(query: dict = None):
+    """
+    Read all entries from the database, optionally filtered by a query.
+
+    Args:
+        query (dict, optional): Dictionary containing the query parameters. Defaults to None.
+
+    Returns:
+        list: List of matching entries from the database.
+    """
     with Session(engine) as session:
         statement = select(Sources)
         if query:
@@ -108,6 +172,12 @@ def read_all(query: dict = None):
 
 
 def delete_all():
+    """
+    Delete all entries from the database.
+
+    Returns:
+        None
+    """
     with Session(engine) as session:
         session.exec(Sources).delete()
         session.commit()
