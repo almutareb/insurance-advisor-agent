@@ -27,3 +27,4 @@ def get_db_retriever(vector_db:str=None):
     retriever = db.as_retriever()
 
     return retriever
+
