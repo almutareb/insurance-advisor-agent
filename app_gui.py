@@ -1,12 +1,6 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
-from fastapi import FastAPI
-from rag_app.agents.react_agent import agent_executor, llm
-from rag_app.chains import user_response_sentiment_prompt
-# need to import the qa!
-
-app = FastAPI()
-user_sentiment_chain = user_response_sentiment_prompt | llm
+from rag_app.agents.react_agent import agent_executor
 
 
 if __name__ == "__main__":
@@ -21,13 +15,6 @@ if __name__ == "__main__":
     def bot(history):
         # Obtain the response from the 'infer' function using the latest input
         response = infer(history[-1][0], history)
-        #sources = [doc.metadata.get("source") for doc in response['source_documents']]
-        #src_list = '\n'.join(sources)
-        #print_this = response['result'] + "\n\n\n Sources: \n\n\n" + src_list
-
-
-        #history[-1][1] = print_this #response['answer']
-        # Update the history with the bot's response
         history[-1][1] = response['output']
         return history
 
@@ -36,27 +23,21 @@ if __name__ == "__main__":
         # Use the question and history to query the RAG model
         #result = qa({"query": question, "history": history, "question": question})
         try:
-            data = user_sentiment_chain.invoke({"user_reponse":question})
-        except Exception as e:
-            raise e
-        try:
             result = agent_executor.invoke(
                 {
                     "input": question,
                     "chat_history": history
                 }
             )
-            
-           
             return result
         except Exception:
             raise gr.Error("Model is Overloaded, Please retry later!")
         
     def vote(data: gr.LikeData):
         if data.liked:
-            print("You upvoted this response: " + data.value)
+            print("You upvoted this response: ")
         else:
-            print("You downvoted this response: " + data.value)
+            print("You downvoted this response: ")
 
     # CSS styling for the Gradio interface
     css = """
@@ -95,5 +76,3 @@ if __name__ == "__main__":
 
     # Launch the Gradio demo interface
     demo.queue().launch(share=False, debug=True)
-
-    app = gr.mount_gradio_app(app, demo, path="/")
