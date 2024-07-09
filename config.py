@@ -4,7 +4,7 @@ from rag_app.database.db_handler import DataBaseHandler
 
 load_dotenv()
 
-sqlite_file_name = os.getenv('SOURCES_CACHE')
+SQLITE_FILE_NAME = os.getenv('SOURCES_CACHE')
 
 
 db = DataBaseHandler()
