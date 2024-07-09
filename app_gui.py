@@ -1,5 +1,6 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
+import re
 #from fastapi import FastAPI
 from rag_app.agents.kb_retriever_agent import agent_executor, llm
 from rag_app.chains import user_response_sentiment_prompt
@@ -20,16 +21,33 @@ if __name__ == "__main__":
     # Function representing the bot's response mechanism
     def bot(history):
         # Obtain the response from the 'infer' function using the latest input
-        response = infer(history[-1][0], history)
-        #sources = [doc.metadata.get("source") for doc in response['source_documents']]
-        #src_list = '\n'.join(sources)
-        #print_this = response['result'] + "\n\n\n Sources: \n\n\n" + src_list
+        user_input = history[-1][0]
+        if re.search(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+",user_input):
+            return "Vielen Dank, wir melden uns bald!"
+        else:
+        
+            response = infer(user_input, history)
+            #sources = [doc.metadata.get("source") for doc in response['source_documents']]
+            #src_list = '\n'.join(sources)
+            text_added="""
+            Vielen Dank für Ihr Interesse an unseren Produkten! Um Ihnen weitere Informationen und exklusive Angebote zukommen zu lassen, \
+            teilen Sie uns bitte Ihre E-Mail-Adresse mit. Wir freuen uns darauf, Ihnen mehr zu zeigen!
+            
+            Bitte geben Sie hier Ihre E-Mail-Adresse ein:
+            """
+            #print_this = response['result'] + "\n\n\n Sources: \n\n\n" + src_list
+            try:
+                data = user_sentiment_chain.invoke({"chat_history":history})
+                print(data)
+                if "TRUE" in data:
+                    response['output'] = response['output'] + '\n\n\n' + text_added
+            except Exception as e:
+                raise e
 
-
-        #history[-1][1] = print_this #response['answer']
-        # Update the history with the bot's response
-        history[-1][1] = response['output']
-        return history
+            #history[-1][1] = print_this #response['answer']
+            # Update the history with the bot's response
+            history[-1][1] = response['output']
+            return history
 
     # Function to infer the response using the RAG model
     def infer(question, history):
@@ -42,18 +60,10 @@ if __name__ == "__main__":
                     "chat_history": history
                 }
             )
-            
            
             return result
         except Exception:
             raise gr.Error("Model is Overloaded, Please retry later!")
-        
-    def ask_for_mail(history):
-        try:
-            data = user_sentiment_chain.invoke({"chat_history":history})
-            print(data)
-        except Exception as e:
-            raise e
 
         
     def vote(data: gr.LikeData):
@@ -93,7 +103,7 @@ if __name__ == "__main__":
         # Define the action when the question is submitted
         question.submit(add_text, [chatbot, question], [chatbot, question], queue=False).then(
             bot, chatbot, chatbot
-        ).success(ask_for_mail, chatbot, chatbot)
+        )
         # Define the action for the clear button
         clear.click(lambda: None, None, chatbot, queue=False)
 
