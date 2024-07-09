@@ -1,58 +1,24 @@
-FROM mcr.microsoft.com/devcontainers/base:jammy
-# FROM mcr.microsoft.com/devcontainers/base:jammy 
+# read the doc: https://huggingface.co/docs/hub/spaces-sdks-docker
+# you will also find guides on how best to write your Dockerfile
 
-ARG DEBIAN_FRONTEND=noninteractive
-ARG USER=vscode
+FROM python:3.11
 
-RUN DEBIAN_FRONTEND=noninteractive \
-    && apt-get update \ 
-    && apt-get install -y build-essential --no-install-recommends make \
-        ca-certificates \
-        git \
-        libssl-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        wget \
-        curl \
-        llvm \
-        libncurses5-dev \
-        xz-utils \
-        tk-dev \
-        libxml2-dev \
-        libxmlsec1-dev \
-        libffi-dev \
-        liblzma-dev \
-        ffmpeg \
-        libsm6 \
-        libxext6
+ENV VIRTUAL_ENV=/opt/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Python and poetry installation
-USER $USER
-ARG HOME="/home/$USER"
-ARG PYTHON_VERSION=3.11
+# The two following lines are requirements for the Dev Mode to be functional
+# Learn more about the Dev Mode at https://huggingface.co/dev-mode-explorers
+RUN useradd -m -u 1000 user
+WORKDIR /app
 
-ENV PYENV_ROOT="${HOME}/.pyenv"
-ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${HOME}/.local/bin:$PATH"
+COPY --chown=user ./requirements.txt requirements.txt
+RUN apt-get -y update
+RUN apt-get -y upgrade
+#RUN apt-get install -y sqlite3 libsqlite3-dev
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
+#EXPOSE 1433
 
-RUN echo "done 0" \
-    && curl https://pyenv.run | bash \
-    && echo "done 1" \
-    && pyenv install ${PYTHON_VERSION} \
-    && echo "done 2" \
-    && pyenv global ${PYTHON_VERSION} \
-    && echo "done 3" \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry config virtualenvs.in-project true
-
-COPY requirements.txt /tmp/
-RUN DEBIAN_FRONTEND=noninteractive \
-    && pip install --requirements /tmp/requirements.txt
-COPY . /tmp/
-
-RUN DEBIAN_FRONTEND=noninteractive \
-    && python -m pip install --upgrade pip
-
-ARG USERNAME
-COPY C:/Users/${USERNAME}/.ssh/id_ed25519 ${HOME}/.ssh/
+COPY --chown=user . /app
+#RUN /usr/bin/sqlite3 /app/database/source_cache.sqlite3
+CMD ["uvicorn", "rag_app.main:app", "--host", "0.0.0.0", "--port", "7860"]
