@@ -1,0 +1,1 @@
+from rag_app.database.db_handler import DataBaseHandler

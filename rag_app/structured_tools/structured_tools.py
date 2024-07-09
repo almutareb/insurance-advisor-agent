@@ -1,25 +1,17 @@
-from langchain.tools import BaseTool, StructuredTool, tool
-from langchain_community.tools import WikipediaQueryRun
-from langchain_community.utilities import WikipediaAPIWrapper
-#from langchain.tools import Tool
+from langchain.tools import tool
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
 )
 from langchain_community.vectorstores import Chroma
-import ast
-
-import chromadb
-
 from rag_app.utils.utils import (
     parse_list_to_dicts, format_search_results
 )
-from rag_app.database.db_handler import (
-    add_many
-)
-
+import chromadb
 import os
-# from innovation_pathfinder_ai.utils import create_wikipedia_urls_from_text
+from config import db
+
+
 
 persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
 embedding_model = os.getenv("EMBEDDING_MODEL")
@@ -48,6 +40,7 @@ def memory_search(query:str) -> str:
     
     retriever = vector_db.as_retriever()
     docs = retriever.invoke(query)
+    
     
     return docs.__str__()
 
@@ -91,7 +84,7 @@ def google_search(query: str) -> str:
     if len(search_results)>1:
         cleaner_sources =format_search_results(search_results)
         parsed_csources = parse_list_to_dicts(cleaner_sources)
-        add_many(parsed_csources)
+        db.add_many(parsed_csources)
     else:
         cleaner_sources = search_results
     

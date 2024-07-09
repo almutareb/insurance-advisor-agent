@@ -1,16 +1,27 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
 from rag_app.agents.react_agent import agent_executor
+from config import db
 # need to import the qa!
+db.create_new_session()
 
-# Function to add a new input to the chat history
+
 def add_text(history, text):
+    """Function to add a new input to the chat history
+    
+    Return: return_description
+    """
+    
     # Append the new text to the history with a placeholder for the response
     history = history + [(text, None)]
     return history, ""
 
-# Function representing the bot's response mechanism
+
 def bot(history):
+    """Function representing the bot's response mechanism
+    
+    """
+    
     # Obtain the response from the 'infer' function using the latest input
     response = infer(history[-1][0], history)
     #sources = [doc.metadata.get("source") for doc in response['source_documents']]
@@ -23,10 +34,13 @@ def bot(history):
     history[-1][1] = response['output']
     return history
 
-# Function to infer the response using the RAG model
+
 def infer(question, history):
+    """Function to infer the response using the RAG model
+    
+    """
+    
     # Use the question and history to query the RAG model
-    #result = qa({"query": question, "history": history, "question": question})
     try:
         result = agent_executor.invoke(
             {
@@ -37,6 +51,8 @@ def infer(question, history):
         return result
     except Exception:
         raise gr.Error("Model is Overloaded, Please retry later!")
+    
+
 
 # CSS styling for the Gradio interface
 css = """
