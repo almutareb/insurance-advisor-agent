@@ -8,7 +8,7 @@ from langchain_community.embeddings.sentence_transformer import (
 )
 from langchain_community.vectorstores import Chroma
 import ast
-
+from rag_app.loading_data.load_S3_vector_stores import get_chroma_vs
 import chromadb
 
 from rag_app.utils.utils import (
@@ -23,6 +23,8 @@ import os
 
 persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
 embedding_model = os.getenv("EMBEDDING_MODEL")
+if os.listdir(persist_directory) == 0:
+    get_chroma_vs()
 
 @tool
 def memory_search(query:str) -> str:
