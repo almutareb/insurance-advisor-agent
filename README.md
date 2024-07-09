@@ -1,3 +1,13 @@
+---
+title: Insurance Advisor Agents PoC
+emoji: 🤖
+colorFrom: gray
+colorTo: gray
+app_file: app.py
+pinned: false
+---
+
+
 # Insurance Advisor Agent(s)
 
 Setup a modular, multi-agent system to handle inqueries to an insurance company. The system utilizes different approachs to find reliable answers regarding the insurance products
