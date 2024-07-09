@@ -1,4 +1,4 @@
-gi# retriever and qa_chain function
+# retriever and qa_chain function
 
 # HF libraries
 from langchain.llms import HuggingFaceHub
