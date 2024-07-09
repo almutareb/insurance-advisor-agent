@@ -1,9 +1,11 @@
 ---
 title: Insurance Advisor Agents PoC
 emoji: 🤖
-colorFrom: gray
-colorTo: gray
-app_file: app.py
+colorFrom: red
+colorTo: indigo
+sdk: docker
+python: 3.11
+app_file: app_gui.py
 pinned: false
 ---
 
