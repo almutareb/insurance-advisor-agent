@@ -20,12 +20,12 @@ def web_research(query: str) -> List[dict]:
 def ask_user(query: str) -> str:
     """Frage den Benutzer direkt wenn du nicht sicher bist was er meint oder du eine Entscheidung brauchst."""
     
-    result = HumanInputRun.invoke(query)
+    result = HumanInputRun().invoke(query)
     return result
 
 @tool
 def get_email(query: str) -> str:
     """Frage den Benutzer nach seiner EMail Adresse, wenn du denkst du hast seine Anfrage beantwortet hast, damit wir ihm mehr Informationen im Anschluss zu senden kannst."""
 
-    result = HumanInputRun.invoke(query)
+    result = HumanInputRun().invoke(query)
     return result
