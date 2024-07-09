@@ -32,7 +32,7 @@ embeddings = SentenceTransformerEmbeddings(model_name=model_name)
 
 ## FAISS
 def get_faiss_vs():
-    if os.listdir(FAISS_INDEX_PATH) == 0:
+    if not os.path.exists(FAISS_INDEX_PATH):
         # Initialize an S3 client with unsigned configuration for public access
         s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
 
@@ -56,7 +56,7 @@ def get_faiss_vs():
 
 ## Chroma DB
 def get_chroma_vs():
-    if os.listdir(CHROMA_DIRECTORY) == 0:
+    if not os.path.exists(CHROMA_DIRECTORY):
         # Initialize an S3 client with unsigned configuration for public access
         s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
 

@@ -1,6 +1,9 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
+from rag_app.loading_data.load_S3_vector_stores import get_chroma_vs
 from rag_app.agents.react_agent import agent_executor
+
+get_chroma_vs()
 
 
 if __name__ == "__main__":
