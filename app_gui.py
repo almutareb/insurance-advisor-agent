@@ -1,10 +1,13 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
 from fastapi import FastAPI
-from rag_app.agents.react_agent import agent_executor
+from rag_app.agents.react_agent import agent_executor, llm
+from rag_app.chains import user_response_sentiment_prompt
 # need to import the qa!
 
 app = FastAPI()
+user_sentiment_chain = user_response_sentiment_prompt | llm
+
 
 if __name__ == "__main__":
 
@@ -33,12 +36,18 @@ if __name__ == "__main__":
         # Use the question and history to query the RAG model
         #result = qa({"query": question, "history": history, "question": question})
         try:
+            data = user_sentiment_chain.invoke({"user_reponse":question})
+        except Exception as e:
+            raise e
+        try:
             result = agent_executor.invoke(
                 {
                     "input": question,
                     "chat_history": history
                 }
             )
+            
+           
             return result
         except Exception:
             raise gr.Error("Model is Overloaded, Please retry later!")

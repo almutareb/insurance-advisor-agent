@@ -164,3 +164,8 @@ cython_debug/
 *.sqlite3
 *.bin
 *.pickle
+
+
+# Databases
+
+*.db
