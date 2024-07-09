@@ -1,6 +1,6 @@
 from langchain.tools import BaseTool, StructuredTool, tool
 from langchain_community.tools import HumanInputRun
-from rag_app.agents.kb_retriever_agent import agent_worker
+from rag_app.agents.kb_retriever_agent import agent_executor
 from operator import itemgetter
 from typing import Dict, List
 
@@ -8,7 +8,7 @@ from typing import Dict, List
 def web_research(query: str) -> List[dict]:
     """Verbessere die Ergebnisse durch eine Suche über die Webseite der Versicherung. Erstelle eine neue Suchanfrage, um die Erfolgschancen zu verbesseren."""
     
-    result = agent_worker.invoke(
+    result = agent_executor.invoke(
         {
             "input": query
         }

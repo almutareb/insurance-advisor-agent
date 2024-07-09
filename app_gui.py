@@ -1,11 +1,11 @@
 # Import Gradio for UI, along with other necessary libraries
 import gradio as gr
-from fastapi import FastAPI
-from rag_app.agents.react_agent import agent_executor, llm
+#from fastapi import FastAPI
+from rag_app.agents.kb_retriever_agent import agent_executor, llm
 from rag_app.chains import user_response_sentiment_prompt
 # need to import the qa!
 
-app = FastAPI()
+#app = FastAPI()
 user_sentiment_chain = user_response_sentiment_prompt | llm
 
 
@@ -36,10 +36,6 @@ if __name__ == "__main__":
         # Use the question and history to query the RAG model
         #result = qa({"query": question, "history": history, "question": question})
         try:
-            data = user_sentiment_chain.invoke({"user_reponse":question})
-        except Exception as e:
-            raise e
-        try:
             result = agent_executor.invoke(
                 {
                     "input": question,
@@ -52,11 +48,19 @@ if __name__ == "__main__":
         except Exception:
             raise gr.Error("Model is Overloaded, Please retry later!")
         
+    def ask_for_mail(history):
+        try:
+            data = user_sentiment_chain.invoke({"chat_history":history})
+            print(data)
+        except Exception as e:
+            raise e
+
+        
     def vote(data: gr.LikeData):
         if data.liked:
-            print("You upvoted this response: " + data.value)
+            print("You upvoted this response")
         else:
-            print("You downvoted this response: " + data.value)
+            print("You downvoted this response: ")
 
     # CSS styling for the Gradio interface
     css = """
@@ -89,11 +93,11 @@ if __name__ == "__main__":
         # Define the action when the question is submitted
         question.submit(add_text, [chatbot, question], [chatbot, question], queue=False).then(
             bot, chatbot, chatbot
-        )
+        ).success(ask_for_mail, chatbot, chatbot)
         # Define the action for the clear button
         clear.click(lambda: None, None, chatbot, queue=False)
 
     # Launch the Gradio demo interface
     demo.queue().launch(share=False, debug=True)
 
-    app = gr.mount_gradio_app(app, demo, path="/")
+    #app = gr.mount_gradio_app(app, demo, path="/")

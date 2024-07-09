@@ -2,38 +2,17 @@ from langchain_core.prompts import PromptTemplate
 
 
 user_response_sentiment_template = """ 
-You will be given a user response to an agent.
-=================
-{user_reponse} 
-====================
-You must determine if the user has has their questions answered. 
-If the user seems satisfied respond saying "1" or "0" ONLY.
+Analysiere die folgende Chat Interaktion, und beurteile, ob die Frage, des Nutzers gut beantwortet wurde. Wenn dies der Fall ist, dann biete den Nutzer an, \
+Mehr informationen zu den Versicherungsprodukten per Email zuzuschicken und fordere ihn auf seine Email Adresse anzugeben.
 
-Examples:
-================
+Antworte nur mit TRUE oder FALSE. Ohne Erklärungen oder Ergänzung.
 
-Example 1
-USER: Great Work! 
-YOUR RESPONSE: 1
-=================
+Vorheriger Gesprächsverlauf:
+<CONVERSATION_HISTORY>
+{chat_history}
+</CONVERSATION_HISTORY>
 
-USER: I still need help! 
-YOUR RESPONSE: 0
-Example 2
-================================
-
-USER: I don't understand what you mean 
-YOUR RESPONSE: 0
-Example 3
-================================
-
-USER: That makes sense! 
-YOUR RESPONSE: 1
-Example 4
-================================
-
-  
-
+BEWERTUNG: 
 """
 
 user_response_sentiment_prompt = PromptTemplate.from_template(user_response_sentiment_template)

@@ -12,7 +12,7 @@ from rag_app.structured_tools.structured_tools import (
 )
 
 from langchain.prompts import PromptTemplate
-from rag_app.templates.react_json_ger import template_system
+from rag_app.templates.react_json_with_memory_ger import template_system
 # from rag_app.utils import logger
 
 # set_llm_cache(SQLiteCache(database_path=".cache.db"))
@@ -53,7 +53,7 @@ agent = (
     {
         "input": lambda x: x["input"],
         "agent_scratchpad": lambda x: format_log_to_str(x["intermediate_steps"]),
-        #"chat_history": lambda x: x["chat_history"],
+        "chat_history": lambda x: x["chat_history"],
     }
     | prompt
     | chat_model_with_stop
@@ -61,7 +61,7 @@ agent = (
 )
 
 # instantiate AgentExecutor
-agent_worker = AgentExecutor(
+agent_executor = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True,
