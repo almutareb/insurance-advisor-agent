@@ -23,7 +23,7 @@ import os
 
 persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
 embedding_model = os.getenv("EMBEDDING_MODEL")
-if os.listdir(persist_directory) == 0:
+if not os.path.exists(persist_directory):
     get_chroma_vs()
 
 @tool
