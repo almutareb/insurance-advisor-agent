@@ -20,10 +20,11 @@ class Settings(BaseSettings):
     GOOGLE_CSE_ID: str
     GOOGLE_API_KEY: str
     VECTOR_DATABASE_LOCATION: str
-    CONVERSATION_COLLECTION_NAME: str
+    #CONVERSATION_COLLECTION_NAME: str
     EMBEDDING_MODEL: str
     SOURCES_CACHE: str
-    LOCAL_CACHE: str
+    #LOCAL_CACHE: str
+    LLM_MODEL: str
 
     class Config:
         case_sensitive = True

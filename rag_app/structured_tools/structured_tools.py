@@ -2,6 +2,7 @@ from langchain.tools import BaseTool, StructuredTool, tool
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 #from langchain.tools import Tool
+from langchain_community.tools import HumanInputRun
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
@@ -96,3 +97,10 @@ def google_search(query: str) -> str:
         cleaner_sources = search_results
     
     return cleaner_sources.__str__()
+
+@tool
+def ask_user(query: str) -> str:
+    """Frage den Benutzer direkt wenn du nicht sicher bist was er meint oder du eine Entscheidung brauchst."""
+    
+    result = HumanInputRun().invoke(query)
+    return result

@@ -16,6 +16,6 @@ boto3
 rich
 sqlmodel
 fastapi
-uvicron
+uvicorn
 adaptive-cards-py
 pydantic_settings

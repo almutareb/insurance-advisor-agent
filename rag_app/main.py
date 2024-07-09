@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from rag_app.api.v1.api import api_router as api_router_v1
+from rag_app.api.api import api_router as api_router_v1
 from fastapi.responses import HTMLResponse
 from rag_app.utils.config import settings
 from rag_app.templates.chat import chat_html
