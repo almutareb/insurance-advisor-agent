@@ -16,7 +16,7 @@ from rag_app.templates.react_json_ger import template_system
 # from rag_app.utils import logger
 
 # set_llm_cache(SQLiteCache(database_path=".cache.db"))
-# logger = logger.get_console_logger("hf_mixtral_agent")
+# logger = logger.get_console_logger("kb_retriever_agent")
 
 config = load_dotenv(".env")
 HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
