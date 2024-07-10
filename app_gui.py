@@ -35,7 +35,7 @@ if __name__ == "__main__":
             )
             return result
         except Exception:
-            raise gr.Warning("Model is Overloaded, please try again in a few minuteslater!")
+            raise gr.Warning("Model is Overloaded, please try again in a few minutes!")
         
     def vote(data: gr.LikeData):
         if data.liked:
