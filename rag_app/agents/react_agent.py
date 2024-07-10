@@ -7,6 +7,10 @@ from langchain.agents.output_parsers import ReActJsonSingleInputOutputParser
 from langchain.tools.render import render_text_description
 import os
 from dotenv import load_dotenv
+# local cache
+from langchain.globals import set_llm_cache
+from langchain.cache import SQLiteCache # sqlite
+#from langchain.cache import InMemoryCache # in memory cache
 from rag_app.structured_tools.structured_tools import (
     google_search, knowledgeBase_search
 )
@@ -21,6 +25,8 @@ HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 LLM_MODEL = os.getenv('LLM_MODEL')
+
+set_llm_cache(SQLiteCache(database_path=".cache.db"))
 
 # Load the model from the Hugging Face Hub
 llm = HuggingFaceEndpoint(repo_id=LLM_MODEL, 
@@ -65,8 +71,8 @@ agent_executor = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True,
-    max_iterations=10,       # cap number of iterations
-    #max_execution_time=60,  # timout at 60 sec
+    max_iterations=20,       # cap number of iterations
+    max_execution_time=90,  # timout at 60 sec
     return_intermediate_steps=True,
     handle_parsing_errors=True,
     )
