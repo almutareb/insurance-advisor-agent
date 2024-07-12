@@ -3,6 +3,7 @@ import datetime
 import os
 import uuid
 from typing import Dict
+import re
 # from rag_app.utils import logger
 
 # logger = logger.get_console_logger("utils")
