@@ -80,8 +80,13 @@ def google_search(query: str) -> str:
     search_results:dict = websearch.results(query, 3)
     print(search_results)
     if len(search_results)>1:
+        # add session id
         cleaner_sources =format_search_results(search_results)
         parsed_csources = parse_list_to_dicts(cleaner_sources)
+        
+        # add the session id to each element in `parsed_csources`
+        [i.update({"session_id":db.session_id}) for i in parsed_csources]
+        
         db.add_many(parsed_csources)
     else:
         cleaner_sources = search_results
