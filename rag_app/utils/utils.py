@@ -2,7 +2,7 @@ import hashlib
 import datetime
 import os
 import uuid
-
+from typing import Dict
 # from rag_app.utils import logger
 
 # logger = logger.get_console_logger("utils")
@@ -112,4 +112,27 @@ def generate_uuid() -> str:
     Returns:
         str: A UUID string.
     """
-    return str(uuid.uuid4())        
+    return str(uuid.uuid4())
+
+def extract_responses(text: str) -> Dict[str, str]:
+    """
+    Extracts the user response and AI response from the provided text.
+
+    Args:
+        text (str): The input text containing user and AI responses.
+
+    Returns:
+        Dict[str, str]: A dictionary with keys 'USER' and 'AI' containing the respective responses.
+    """
+    user_pattern = re.compile(r'USER: (.*?) \n', re.DOTALL)
+    ai_pattern = re.compile(r'AI: (.*?)$', re.DOTALL)
+    
+    user_match = user_pattern.search(text)
+    ai_match = ai_pattern.search(text)
+    
+    responses = {
+        "USER": user_match.group(1) if user_match else "",
+        "AI": ai_match.group(1) if ai_match else ""
+    }
+    
+    return responses
