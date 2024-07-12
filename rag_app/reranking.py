@@ -80,31 +80,29 @@ def get_reranked_docs_chroma(query:str,
         
         Returns: A list of documents with the highest rank
     """
-    assert num_docs <= 10, "num_docs should be less than similarity search results"
-    
     embeddings = HuggingFaceInferenceAPIEmbeddings(api_key=hf_api_key,
                                                    model_name=embedding_model)
     # Load the vectorstore database
     db = Chroma(persist_directory=path_to_db, embedding_function=embeddings)
     
-    # Get 10 documents based on similarity search
+    # Get k documents based on similarity search
     sim_docs =  db.similarity_search(query=query, k=10)
 
-    # Add the page_content, description and title together
     passages = [doc.page_content for doc in sim_docs]
     
     # Prepare the payload
     payload = {"inputs": 
                {"source_sentence": query,
 	            "sentences": passages}}
-
     
     headers = {"Authorization": f"Bearer {hf_api_key}"}
 
     response = requests.post(url=reranking_hf_url, headers=headers, json=payload)
+    print(f'{response = }')
     if response.status_code != 200:
         print('Something went wrong with the response')
         return
+    
     similarity_scores = response.json()
     ranked_results = sorted(zip(sim_docs, passages, similarity_scores), key=lambda x: x[2], reverse=True)
     top_k_results = ranked_results[:num_docs]
@@ -113,15 +111,16 @@ def get_reranked_docs_chroma(query:str,
 
 
 if __name__ == "__main__":
-    
+
+   
     HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
     EMBEDDING_MODEL = "sentence-transformers/multi-qa-mpnet-base-dot-v1"
 
     project_dir = Path().cwd().parent
     path_to_vector_db = str(project_dir/'vectorstore/chroma-zurich-mpnet-1500')
+    assert Path(path_to_vector_db).exists(), "Cannot access path_to_vector_db "
 
     query = "I'm looking for student insurance"
-
 
     re_ranked_docs = get_reranked_docs_chroma(query=query,
                                               path_to_db= path_to_vector_db,
