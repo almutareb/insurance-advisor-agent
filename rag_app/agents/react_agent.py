@@ -9,14 +9,14 @@ import os
 from dotenv import load_dotenv
 # local cache
 from langchain.globals import set_llm_cache
-from langchain.cache import SQLiteCache # sqlite
+from langchain_community.cache import SQLiteCache # sqlite
 #from langchain.cache import InMemoryCache # in memory cache
 from rag_app.structured_tools.structured_tools import (
     google_search, knowledgeBase_search
 )
 
 from langchain.prompts import PromptTemplate
-from rag_app.templates.react_json_with_memory_ger import template_system
+from rag_app.templates.react_json_with_memory import template_system
 # from innovation_pathfinder_ai.utils import logger
 # logger = logger.get_console_logger("hf_mixtral_agent")
 
