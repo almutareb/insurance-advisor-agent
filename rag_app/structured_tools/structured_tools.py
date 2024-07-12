@@ -9,12 +9,8 @@ from rag_app.utils.utils import (
 )
 import chromadb
 import os
-from config import db
+from config import db, PERSIST_DIRECTORY, EMBEDDING_MODEL
 
-
-
-persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
-embedding_model = os.getenv("EMBEDDING_MODEL")
 
 @tool
 def memory_search(query:str) -> str:
@@ -22,14 +18,14 @@ def memory_search(query:str) -> str:
         This is your primary source to start your search with checking what you already have learned from the past, before going online."""
     # Since we have more than one collections we should change the name of this tool
     client = chromadb.PersistentClient(
-     path=persist_directory,
+     path=PERSIST_DIRECTORY,
     )
     
     collection_name = os.getenv('CONVERSATION_COLLECTION_NAME')
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=embedding_model,
+        model_name=EMBEDDING_MODEL,
         )
     
     vector_db = Chroma(
@@ -44,6 +40,7 @@ def memory_search(query:str) -> str:
     
     return docs.__str__()
 
+
 @tool
 def knowledgeBase_search(query:str) -> str:
     """Suche die interne Datenbank nach passenden Versicherungsprodukten und Informationen zu den Versicherungen"""
@@ -56,7 +53,7 @@ def knowledgeBase_search(query:str) -> str:
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=embedding_model
+        model_name=EMBEDDING_MODEL
         )
     
     # vector_db = Chroma(
@@ -64,7 +61,7 @@ def knowledgeBase_search(query:str) -> str:
     # #collection_name=collection_name,
     # embedding_function=embedding_function,
     # )
-    vector_db = Chroma(persist_directory=persist_directory, embedding_function=embedding_function)
+    vector_db = Chroma(persist_directory=PERSIST_DIRECTORY, embedding_function=embedding_function)
     retriever = vector_db.as_retriever(search_type="mmr", search_kwargs={'k':5, 'fetch_k':10})
     # This is deprecated, changed to invoke
     # LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
@@ -73,6 +70,7 @@ def knowledgeBase_search(query:str) -> str:
         print(doc)
     
     return docs.__str__()
+
 
 @tool
 def google_search(query: str) -> str:
