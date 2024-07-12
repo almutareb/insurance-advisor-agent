@@ -44,6 +44,15 @@ RUN echo "done 0" \
     && pyenv global ${PYTHON_VERSION} \
     && echo "done 3" \
     && curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry config virtualenvs.in-project true \
-    && echo "done 4" \
-    && pip install -r requirements.txt
+    && poetry config virtualenvs.in-project true
+
+COPY requirements.txt /tmp/
+RUN DEBIAN_FRONTEND=noninteractive \
+    && pip install --requirements /tmp/requirements.txt
+COPY . /tmp/
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    && python -m pip install --upgrade pip
+
+ARG USERNAME
+COPY C:/Users/${USERNAME}/.ssh/id_ed25519 ${HOME}/.ssh/
