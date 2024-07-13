@@ -45,6 +45,10 @@ def memory_search(query:str) -> str:
     retriever = vector_db.as_retriever()
     docs = retriever.invoke(query)
     
+    # add the session id to each element in `docs`
+    [i.update({"session_id":db.session_id}) for i in docs] 
+    db.add_many(docs)
+    
     
     return docs.__str__()
 
@@ -74,6 +78,11 @@ def knowledgeBase_search(query:str) -> str:
     # This is deprecated, changed to invoke
     # LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
     docs = retriever.invoke(query)
+    
+    # add the session id to each element in `docs`
+    [i.update({"session_id":db.session_id}) for i in docs]
+    db.add_many(docs)
+    
     for doc in docs:
         print(doc)
     
