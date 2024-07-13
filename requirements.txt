@@ -15,4 +15,3 @@ gradio
 boto3
 rich
 sqlmodel
-git+https://github.com/almutareb/InnovationPathfinderAI.git
