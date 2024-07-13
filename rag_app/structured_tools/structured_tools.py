@@ -15,9 +15,7 @@ import chromadb
 import os
 from config import db, PERSIST_DIRECTORY, EMBEDDING_MODEL
 
-persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
-embedding_model = os.getenv("EMBEDDING_MODEL")
-if not os.path.exists(persist_directory):
+if not os.path.exists(PERSIST_DIRECTORY):
     get_chroma_vs()
 
 @tool
