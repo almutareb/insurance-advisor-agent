@@ -7,17 +7,17 @@ from langchain.agents.output_parsers import ReActJsonSingleInputOutputParser
 from langchain.tools.render import render_text_description
 import os
 from dotenv import load_dotenv
-from rag_app.structured_tools.agent_tools import (
-    web_research, ask_user, get_email
+# local cache
+from langchain.globals import set_llm_cache
+from langchain.cache import SQLiteCache # sqlite
+#from langchain.cache import InMemoryCache # in memory cache
+from rag_app.structured_tools.structured_tools import (
+    google_search, knowledgeBase_search
 )
 
 from langchain.prompts import PromptTemplate
 from rag_app.templates.react_json_with_memory_ger import template_system
 # from innovation_pathfinder_ai.utils import logger
-# from langchain.globals import set_llm_cache
-# from langchain.cache import SQLiteCache
-
-# set_llm_cache(SQLiteCache(database_path=".cache.db"))
 # logger = logger.get_console_logger("hf_mixtral_agent")
 
 config = load_dotenv(".env")
@@ -25,10 +25,8 @@ HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 LLM_MODEL = os.getenv('LLM_MODEL')
-# LANGCHAIN_TRACING_V2 = "true"
-# LANGCHAIN_ENDPOINT = "https://api.smith.langchain.com"
-# LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
-# LANGCHAIN_PROJECT = os.getenv('LANGCHAIN_PROJECT')
+
+set_llm_cache(SQLiteCache(database_path=".cache.db"))
 
 # Load the model from the Hugging Face Hub
 llm = HuggingFaceEndpoint(repo_id=LLM_MODEL, 
@@ -40,11 +38,10 @@ llm = HuggingFaceEndpoint(repo_id=LLM_MODEL,
 
 
 tools = [
-    #knowledgeBase_search,
-    #google_search,
-    web_research,
-    ask_user,
-    get_email
+    knowledgeBase_search,
+    google_search,
+    #web_research,
+    #ask_user
     ]
 
 prompt = PromptTemplate.from_template(
@@ -74,8 +71,8 @@ agent_executor = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True,
-    max_iterations=10,       # cap number of iterations
-    #max_execution_time=60,  # timout at 60 sec
+    max_iterations=20,       # cap number of iterations
+    max_execution_time=90,  # timout at 60 sec
     return_intermediate_steps=True,
     handle_parsing_errors=True,
     )
