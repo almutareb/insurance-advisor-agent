@@ -1,7 +1,4 @@
-from langchain.tools import BaseTool, StructuredTool, tool
-from langchain_community.tools import WikipediaQueryRun
-from langchain_community.utilities import WikipediaAPIWrapper
-#from langchain.tools import Tool
+from langchain.tools import tool
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
@@ -14,16 +11,11 @@ import chromadb
 from rag_app.utils.utils import (
     parse_list_to_dicts, format_search_results
 )
-from rag_app.database.db_handler import (
-    add_many
-)
-
+import chromadb
 import os
-# from innovation_pathfinder_ai.utils import create_wikipedia_urls_from_text
+from config import db, PERSIST_DIRECTORY, EMBEDDING_MODEL
 
-persist_directory = os.getenv('VECTOR_DATABASE_LOCATION')
-embedding_model = os.getenv("EMBEDDING_MODEL")
-if not os.path.exists(persist_directory):
+if not os.path.exists(PERSIST_DIRECTORY):
     get_chroma_vs()
 
 @tool
@@ -32,14 +24,14 @@ def memory_search(query:str) -> str:
         This is your primary source to start your search with checking what you already have learned from the past, before going online."""
     # Since we have more than one collections we should change the name of this tool
     client = chromadb.PersistentClient(
-     path=persist_directory,
+     path=PERSIST_DIRECTORY,
     )
     
     collection_name = os.getenv('CONVERSATION_COLLECTION_NAME')
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=embedding_model,
+        model_name=EMBEDDING_MODEL,
         )
     
     vector_db = Chroma(
@@ -51,7 +43,13 @@ def memory_search(query:str) -> str:
     retriever = vector_db.as_retriever()
     docs = retriever.invoke(query)
     
+    # add the session id to each element in `docs`
+    [i.update({"session_id":db.session_id}) for i in docs] 
+    db.add_many(docs)
+    
+    
     return docs.__str__()
+
 
 @tool
 def knowledgeBase_search(query:str) -> str:
@@ -65,7 +63,7 @@ def knowledgeBase_search(query:str) -> str:
     #store using envar
     
     embedding_function = SentenceTransformerEmbeddings(
-        model_name=embedding_model
+        model_name=EMBEDDING_MODEL
         )
     
     # vector_db = Chroma(
@@ -73,15 +71,21 @@ def knowledgeBase_search(query:str) -> str:
     # #collection_name=collection_name,
     # embedding_function=embedding_function,
     # )
-    vector_db = Chroma(persist_directory=persist_directory, embedding_function=embedding_function)
+    vector_db = Chroma(persist_directory=PERSIST_DIRECTORY, embedding_function=embedding_function)
     retriever = vector_db.as_retriever(search_type="mmr", search_kwargs={'k':5, 'fetch_k':10})
     # This is deprecated, changed to invoke
     # LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
     docs = retriever.invoke(query)
+    
+    # add the session id to each element in `docs`
+    [i.update({"session_id":db.session_id}) for i in docs]
+    db.add_many(docs)
+    
     for doc in docs:
         print(doc)
     
     return docs.__str__()
+
 
 @tool
 def google_search(query: str) -> str:
@@ -91,9 +95,14 @@ def google_search(query: str) -> str:
     search_results:dict = websearch.results(query, 3)
     print(search_results)
     if len(search_results)>1:
+        # add session id
         cleaner_sources =format_search_results(search_results)
         parsed_csources = parse_list_to_dicts(cleaner_sources)
-        add_many(parsed_csources)
+        
+        # add the session id to each element in `parsed_csources`
+        [i.update({"session_id":db.session_id}) for i in parsed_csources]
+        
+        db.add_many(parsed_csources)
     else:
         cleaner_sources = search_results
     
