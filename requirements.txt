@@ -1,6 +1,6 @@
 langchain
 langchain-community 
-langchain-HuggingFace
+langchain-huggingface
 langchain-text-splitters
 langchain_google_community
 beautifulsoup4 
@@ -16,4 +16,3 @@ boto3
 rich
 sqlmodel
 python-dotenv
-langchain-huggingface
