@@ -8,15 +8,18 @@ load_dotenv()
 SQLITE_FILE_NAME = os.getenv('SOURCES_CACHE')
 PERSIST_DIRECTORY = os.getenv('VECTOR_DATABASE_LOCATION')
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
-SECONDARY_LLM_MODEL = os.getenv("SECONDARY_LLM_MODEL")
+SEVEN_B_LLM_MODEL = os.getenv("SEVEN_B_LLM_MODEL")
 
 
 db = DataBaseHandler()
 
 db.create_all_tables()
 
-SECONDARY_LLM = HuggingFaceEndpoint(
-        repo_id=SECONDARY_LLM_MODEL, 
+# This model is used for task that a larger model may not need to do
+# as of currently we have been getting MODEL OVERLOADED errors
+# with huggingface
+SEVEN_B_LLM_MODEL = HuggingFaceEndpoint(
+        repo_id=SEVEN_B_LLM_MODEL, 
         temperature=0.1,         # Controls randomness in response generation (lower value means less random)
         max_new_tokens=1024,     # Maximum number of new tokens to generate in responses
         repetition_penalty=1.2,  # Penalty for repeating the same words (higher value increases penalty)
