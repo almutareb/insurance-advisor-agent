@@ -1,4 +1,4 @@
-langchain 
+langchain
 langchain-community 
 langchain-HuggingFace
 langchain-text-splitters
@@ -15,3 +15,5 @@ gradio
 boto3
 rich
 sqlmodel
+python-dotenv
+langchain_huggingface

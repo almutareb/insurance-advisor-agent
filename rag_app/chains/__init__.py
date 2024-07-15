@@ -1,1 +1,2 @@
 from rag_app.chains.user_response_sentiment_chain import user_response_sentiment_prompt
+from rag_app.chains.generate_document_summary import generate_document_summary_prompt
