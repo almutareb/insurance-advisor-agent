@@ -1,6 +1,6 @@
 from langchain_core.documents import Document
 from chains import generate_document_summary_prompt
-from config import SECONDARY_LLM
+from config import SEVEN_B_LLM_MODEL
 
 
 def generate_document_summaries(
@@ -27,7 +27,7 @@ def generate_document_summaries(
     
     for doc in new_docs:
         
-        genrate_summary_chain = generate_document_summary_prompt | SECONDARY_LLM
+        genrate_summary_chain = generate_document_summary_prompt | SEVEN_B_LLM_MODEL
         summary = genrate_summary_chain.invoke(
             {"document":str(doc.metadata)}
         )        
