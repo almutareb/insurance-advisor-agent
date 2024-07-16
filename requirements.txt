@@ -16,4 +16,4 @@ boto3
 rich
 sqlmodel
 python-dotenv
-keyber
+keybert
