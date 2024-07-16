@@ -1,9 +1,10 @@
 from typing import List, Tuple, Dict, Any
 from keybert import KeyBERT
+from config import BERT_MODEL
 
 def extract_keywords_from_doc(
     doc: str,
-    model_name: str = "paraphrase-multilingual-MiniLM-L12-v2",
+    model_name: str = BERT_MODEL,
     **kwargs: Dict[str, Any]
 ) -> List[Tuple[str, float]]:
     """
