@@ -78,7 +78,7 @@ def knowledgeBase_search(query:str) -> str:
     docs = retriever.invoke(query)
     
     # add the session id to each element in `docs`
-    [i.update({"session_id":db.session_id}) for i in docs]
+    [i.metadata.update({"session_id":db.session_id}) for i in docs]
     db.add_many(docs)
     
     for doc in docs:
