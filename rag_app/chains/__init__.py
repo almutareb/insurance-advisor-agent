@@ -1,4 +1,4 @@
 from rag_app.chains.user_response_sentiment_chain import user_response_sentiment_prompt
 from rag_app.chains.generate_document_summary import generate_document_summary_prompt
 from rag_app.chains.query_rewritten_chain import query_rewritting_prompt
-from rag_app.chains.generate_keywords_chain import *
+from rag_app.chains.generate_keywords_chain import generate_keywords_prompt
