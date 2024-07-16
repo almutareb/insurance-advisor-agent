@@ -9,7 +9,7 @@ from rag_app.loading_data.load_S3_vector_stores import get_chroma_vs
 import chromadb
 
 from rag_app.utils.utils import (
-    parse_list_to_dicts, format_search_results
+    parse_list_to_dicts, format_search_results, hash_text
 )
 import chromadb
 import os
@@ -78,8 +78,14 @@ def knowledgeBase_search(query:str) -> str:
     docs = retriever.invoke(query)
     
     # add the session id to each element in `docs`
-    [i.metadata.update({"session_id":db.session_id}) for i in docs]
-    db.add_many(docs)
+    #[i.update({"session_id":db.session_id}) for i in docs]
+    tmp_dict = []
+    for x in docs:
+        #x.metadata.update({"session_id":db.session_id})
+        case = {"url": x.metadata['source'], "session_id":db.session_id, "summary": x.page_content,"hash_id": hash_text(x.metadata['source'])}
+        tmp_dict.append(case)
+        
+    db.add_many(tmp_dict)
     
     for doc in docs:
         print(doc)
