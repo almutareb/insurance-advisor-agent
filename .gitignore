@@ -169,3 +169,16 @@ cython_debug/
 # Databases
 
 *.db
+rag_evaluation/website_docs/12796.pdf
+rag_evaluation/website_docs/720522.pdf
+rag_evaluation/website_docs/720523.pdf
+rag_evaluation/website_docs/720524.pdf
+rag_evaluation/website_docs/720525.pdf
+rag_evaluation/website_docs/720553.pdf
+rag_evaluation/website_docs/721229.pdf
+rag_evaluation/website_docs/721230.pdf
+rag_evaluation/website_docs/721231.pdf
+rag_evaluation/website_docs/722139.pdf
+rag_evaluation/website_docs/722140.pdf
+rag_evaluation/website_docs/722141.pdf
+rag_evaluation/website_docs/pdf_and_source.csv
