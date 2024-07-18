@@ -6,7 +6,7 @@ from langchain_huggingface import HuggingFaceEndpoint
 load_dotenv()
 
 SQLITE_FILE_NAME = os.getenv('SOURCES_CACHE')
-PERSIST_DIRECTORY = os.getenv('VECTOR_DATABASE_LOCATION')
+VECTOR_DATABASE_LOCATION = os.getenv('VECTOR_DATABASE_LOCATION')
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 SEVEN_B_LLM_MODEL = os.getenv("SEVEN_B_LLM_MODEL")
 BERT_MODEL = os.getenv("BERT_MODEL")
