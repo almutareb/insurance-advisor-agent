@@ -16,8 +16,6 @@ from config import EMBEDDING_MODEL
 def get_db_retriever(vector_db:str=None):
     embeddings = HuggingFaceHubEmbeddings(repo_id=EMBEDDING_MODEL)
 
-    #db = Chroma(persist_directory="./vectorstore/lc-chroma-multi-mpnet-500", embedding_function=embeddings)
-    #db.get()
     if not vector_db:
         FAISS_INDEX_PATH='./vectorstore/py-faiss-multi-mpnet-500'
     else:
