@@ -4,6 +4,14 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.document_loaders import TextLoader
 
+
+from langchain_community.embeddings.sentence_transformer import (
+    SentenceTransformerEmbeddings,
+)
+import time
+from langchain_core.documents import Document
+from config import EMBEDDING_MODEL
+
 class BaseVectorStore(ABC):
     """
     Abstract base class for vector stores.
@@ -170,10 +178,13 @@ def main():
     """
     # Create an embedding model
     embedding_model = OpenAIEmbeddings()
+    
+    embeddings = SentenceTransformerEmbeddings(model_name=EMBEDDING_MODEL)
+    
 
     # Using Chroma
     chroma_store = ChromaVectorStore(embedding_model, persist_directory="./chroma_store")
-    texts = chroma_store.load_and_process_documents("path/to/your/file.txt")
+    texts = chroma_store.load_and_process_documents("docs/placeholder.txt")
     chroma_store.create_vectorstore(texts)
     results = chroma_store.similarity_search("Your query here")
     print("Chroma results:", results[0].page_content)
