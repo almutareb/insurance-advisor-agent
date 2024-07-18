@@ -169,3 +169,7 @@ cython_debug/
 # Databases
 
 *.db
+
+
+# editor realted files
+.vscode/
