@@ -1,21 +1,16 @@
 # embeddings functions
-#from langchain_community.vectorstores import FAISS
-#from langchain_community.document_loaders import ReadTheDocsLoader
-#from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-# from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
 )
 import time
 from langchain_core.documents import Document
-
+from config import EMBEDDING_MODEL
 
 def create_embeddings(
         docs: list[Document], 
         chunk_size:int = 500, 
         chunk_overlap:int = 50,
-        embedding_model: str = "sentence-transformers/multi-qa-mpnet-base-dot-v1", 
         ):
     """given a sequence of `Document` objects this fucntion will
     generate embeddings for it.
@@ -47,8 +42,7 @@ def create_embeddings(
     print(f'Time taken to chunk {len(docs)} documents: {et} seconds.')
 
     #Stage two: embed the docs.
-    #embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
-    embeddings = SentenceTransformerEmbeddings(model_name=embedding_model)
+    embeddings = SentenceTransformerEmbeddings(model_name=EMBEDDING_MODEL)
     print(f"created a total of {len(chunks)} chunks")
 
     return embeddings,chunks

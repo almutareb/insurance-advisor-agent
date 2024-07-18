@@ -1,4 +1,3 @@
-# from get_db_retriever import get_db_retriever
 from pathlib import Path
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
@@ -11,29 +10,36 @@ from langchain_community.vectorstores import Chroma
 load_dotenv()
 
 
-def get_reranked_docs_faiss(query:str, 
-                      path_to_db:str, 
-                      embedding_model:str,
-                      hf_api_key:str, 
-                      num_docs:int=5) -> list:
+def get_reranked_docs_faiss(
+    query:str, 
+    path_to_db:str, 
+    embedding_model:str,
+    hf_api_key:str, 
+    num_docs:int=5
+    ) -> list:
     """ Re-ranks the similarity search results and returns top-k highest ranked docs
 
-        Args:
-            query (str): The search query
-            path_to_db (str): Path to the vectorstore database
-            embedding_model (str): Embedding model used in the vector store
-            num_docs (int): Number of documents to return
-        
-        Returns: A list of documents with the highest rank
+    Args:
+        query (str): The search query
+        path_to_db (str): Path to the vectorstore database
+        embedding_model (str): Embedding model used in the vector store
+        num_docs (int): Number of documents to return
+    
+    Returns: A list of documents with the highest rank
     """
     assert num_docs <= 10, "num_docs should be less than similarity search results"
     
-    embeddings = HuggingFaceInferenceAPIEmbeddings(api_key=hf_api_key,
-                                                   model_name=embedding_model)
+    embeddings = HuggingFaceInferenceAPIEmbeddings(
+        api_key=hf_api_key,
+        model_name=embedding_model
+        )
+    
     # Load the vectorstore database
-    db = FAISS.load_local(folder_path=path_to_db,
-                          embeddings=embeddings,
-                          allow_dangerous_deserialization=True)
+    db = FAISS.load_local(
+        folder_path=path_to_db,
+        embeddings=embeddings,
+        allow_dangerous_deserialization=True
+        )
     
     # Get 10 documents based on similarity search
     docs =  db.similarity_search(query=query, k=10)

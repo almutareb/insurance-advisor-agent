@@ -1,18 +1,13 @@
 # vectorization functions
 from langchain_community.vectorstores import FAISS
 from langchain_community.vectorstores import Chroma
-#from langchain_community.document_loaders import DirectoryLoader
-#from langchain_text_splitters import RecursiveCharacterTextSplitter
-#from langchain_community.embeddings.sentence_transformer import (
-#    SentenceTransformerEmbeddings,
-#)
-#from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
+
 from rag_app.knowledge_base.create_embedding import create_embeddings
 from rag_app.utils.generate_summary import generate_description, generate_keywords
+
 import time
 import os
-#from dotenv import load_dotenv
 
 def build_vector_store(
         docs: list, 
@@ -32,11 +27,6 @@ def build_vector_store(
         FAISS_INDEX_PATH = db_path
 
     embeddings,chunks = create_embeddings(docs, chunk_size, chunk_overlap, embedding_model)
-    # for chunk in chunks:
-    #     keywords=generate_keywords(chunk)
-    #     description=generate_description(chunk)
-    #     chunk.metadata['keywords']=keywords
-    #     chunk.metadata['description']=description
 
     #load chunks into vector store
     print(f'Loading chunks into faiss vector store ...')
