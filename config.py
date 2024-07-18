@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from rag_app.database.db_handler import DataBaseHandler
 from langchain_huggingface import HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceHubEmbeddings
 
 load_dotenv()
 
@@ -11,7 +12,11 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 SEVEN_B_LLM_MODEL = os.getenv("SEVEN_B_LLM_MODEL")
 BERT_MODEL = os.getenv("BERT_MODEL")
 FAISS_INDEX_PATH = os.getenv("FAISS_INDEX_PATH")
+HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
+
+
+embeddings = HuggingFaceHubEmbeddings(repo_id=EMBEDDING_MODEL)
 
 db = DataBaseHandler()
 

@@ -10,7 +10,10 @@ from langchain_community.embeddings.sentence_transformer import (
 )
 import time
 from langchain_core.documents import Document
-from config import EMBEDDING_MODEL
+from config import EMBEDDING_MODEL, HUGGINGFACEHUB_API_TOKEN
+from langchain.retrievers import EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
+import requests
 
 class BaseVectorStore(ABC):
     """
@@ -48,7 +51,10 @@ class BaseVectorStore(ABC):
         documents = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         return text_splitter.split_documents(documents)
-
+    
+    def get_hybrid_search_result(self,query:str):
+        pass
+        
     @abstractmethod
     def create_vectorstore(self, texts):
         """
@@ -89,6 +95,7 @@ class BaseVectorStore(ABC):
         Save the current state of the vector store.
         """
         pass
+    
 
 class ChromaVectorStore(BaseVectorStore):
     """
@@ -133,6 +140,38 @@ class ChromaVectorStore(BaseVectorStore):
         if not self.vectorstore:
             raise ValueError("Vector store not initialized. Nothing to save.")
         self.vectorstore.persist()
+        
+    def get_reranked_docs(
+        self,
+        query:str,
+        num_docs:int=5
+        ):
+        
+        # Get 10 documents based on similarity search
+        docs = self.vectorstore.similarity_search(query=query, k=10)
+        
+        # Add the page_content, description and title together
+        passages = [doc.page_content + "\n" + doc.metadata.get('title', "") +"\n"+ doc.metadata.get('description', "") 
+                for doc in docs]
+        # Prepare the payload
+        inputs = [{"text": query, "text_pair": passage} for passage in passages]
+
+        API_URL = "https://api-inference.huggingface.co/models/deepset/gbert-base-germandpr-reranking"
+        headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
+
+        response = requests.post(API_URL, headers=headers, json=inputs)
+        scores = response.json()
+        
+        try:
+            relevance_scores = [item[1]['score'] for item in scores]
+        except ValueError as e:
+            print('Could not get the relevance_scores -> something might be wrong with the json output')
+            return 
+        
+        if relevance_scores:
+            ranked_results = sorted(zip(docs, passages, relevance_scores), key=lambda x: x[2], reverse=True)
+            top_k_results = ranked_results[:num_docs]
+            return [doc for doc, _, _ in top_k_results]
 
 class FAISSVectorStore(BaseVectorStore):
     """
@@ -170,6 +209,67 @@ class FAISSVectorStore(BaseVectorStore):
         if self.vectorstore is None:
             raise ValueError("Vector store not initialized. Nothing to save.")
         self.vectorstore.save_local(self.persist_directory)
+        
+    def get_hybrid_search_result(
+        self,
+        query:str,
+        num_docs:int=5
+        )-> list[Document]:
+        """ Uses an ensemble retriever of BM25 and FAISS to return k num documents
+
+        Args:
+            query (str): The search query
+            path_to_db (str): Path to the vectorstore database
+            embedding_model (str): Embedding model used in the vector store
+            num_docs (int): Number of documents to return
+        
+        Returns
+            List of documents
+
+        """
+        all_docs = self.vectorstore.similarity_search("", k=self.vectorstore.index.ntotal)
+        bm25_retriever = BM25Retriever.from_documents(all_docs)
+        bm25_retriever.k = num_docs  # How many results you want
+
+        faiss_retriever = self.vectorstore.as_retriever(search_kwargs={'k': num_docs})
+
+        ensemble_retriever = EnsembleRetriever(retrievers=[bm25_retriever, faiss_retriever],
+                                            weights=[0.5,0.5])
+        
+        results = ensemble_retriever.invoke(input=query) 
+        return results
+    
+    def get_reranked_docs(
+        self,
+        query:str,
+        num_docs:int=5
+        ):
+        
+        # Get 10 documents based on similarity search
+        docs = self.vectorstore.similarity_search(query=query, k=10)
+        
+        # Add the page_content, description and title together
+        passages = [doc.page_content + "\n" + doc.metadata.get('title', "") +"\n"+ doc.metadata.get('description', "") 
+                for doc in docs]
+        # Prepare the payload
+        inputs = [{"text": query, "text_pair": passage} for passage in passages]
+
+        API_URL = "https://api-inference.huggingface.co/models/deepset/gbert-base-germandpr-reranking"
+        headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
+
+        response = requests.post(API_URL, headers=headers, json=inputs)
+        scores = response.json()
+        
+        try:
+            relevance_scores = [item[1]['score'] for item in scores]
+        except ValueError as e:
+            print('Could not get the relevance_scores -> something might be wrong with the json output')
+            return 
+        
+        if relevance_scores:
+            ranked_results = sorted(zip(docs, passages, relevance_scores), key=lambda x: x[2], reverse=True)
+            top_k_results = ranked_results[:num_docs]
+            return [doc for doc, _, _ in top_k_results]
 
 # Usage example:
 def main():
