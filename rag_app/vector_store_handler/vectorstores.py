@@ -167,7 +167,7 @@ class FAISSVectorStore(BaseVectorStore):
         Raises:
             ValueError: If the vector store is not initialized.
         """
-        if self.vectorstore is not None:
+        if self.vectorstore is None:
             raise ValueError("Vector store not initialized. Nothing to save.")
         self.vectorstore.save_local(self.persist_directory)
 
