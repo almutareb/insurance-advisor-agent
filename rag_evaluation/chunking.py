@@ -2,11 +2,13 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import csv
 from pathlib import Path
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_community.vectorstores import FAISS
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-with open(file='website_docs/pdf_and_source.csv', mode='r') as f:
-    csv_reader = csv.reader(f)
-    pdf_source = [(row[0], row[1].strip()) for row in csv_reader]
 
 
 def get_chunks(website_docs:str, sources:list[tuple[str,str]]) -> list:
@@ -52,12 +54,23 @@ def get_chunks(website_docs:str, sources:list[tuple[str,str]]) -> list:
     return all_chunks
 
 
-            
-
 if __name__ == "__main__":
+
+    with open(file='website_docs/pdf_and_source.csv', mode='r') as f:
+        csv_reader = csv.reader(f)
+        pdf_source = [(row[0], row[1].strip()) for row in csv_reader]
+ 
     chunks = get_chunks(website_docs='website_docs', sources=pdf_source)
 
-    for chunk in chunks:
-        print(chunk)
-        print()
-        print()
+    HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
+
+    embeddings = HuggingFaceInferenceAPIEmbeddings(
+    api_key=HUGGINGFACEHUB_API_TOKEN,
+    model_name="thenlper/gte-small")
+
+    # Create a database from chunks
+    vectorstore = FAISS.from_documents(documents=chunks, embedding=embeddings)
+    vectorstore.save_local(folder_path="vectorstore_db")
+
+    print("Done saving vectorstore")
+    

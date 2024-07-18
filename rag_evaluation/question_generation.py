@@ -3,7 +3,7 @@ import json
 from dotenv import load_dotenv
 import os
 from prompts import QA_generation_prompt
-from chunking import get_chunks, pdf_source
+# from chunking import get_chunks, pdf_source
 from langchain.docstore.document import Document
 from tqdm.auto import tqdm
 

@@ -182,3 +182,6 @@ rag_evaluation/website_docs/722139.pdf
 rag_evaluation/website_docs/722140.pdf
 rag_evaluation/website_docs/722141.pdf
 rag_evaluation/website_docs/pdf_and_source.csv
+rag_evaluation/critique_outputs.json
+.vscode/launch.json
+rag_evaluation/test_rag.json
