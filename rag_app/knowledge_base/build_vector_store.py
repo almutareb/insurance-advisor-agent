@@ -60,26 +60,3 @@ def build_vector_store(
     result = f"built vectore store at {FAISS_INDEX_PATH}"
     return result
 
-
-# # Path for saving the FAISS index
-# FAISS_INDEX_PATH = "./vectorstore/lc-faiss-multi-mpnet-500"
-
-# try:
-#     # Stage two: Vectorization of the document chunks
-#     model_name = "sentence-transformers/multi-qa-mpnet-base-dot-v1"  # Model used for embedding
-
-#     # Initialize HuggingFace embeddings with the specified model
-#     embeddings = HuggingFaceEmbeddings(model_name=model_name)
-
-#     print(f'Loading chunks into vector store ...')
-#     st = time.time()  # Start time for performance measurement
-#     # Create a FAISS vector store from the document chunks and save it locally
-#     db = FAISS.from_documents(filter_complex_metadata(chunks), embeddings)
-#     db.save_local(FAISS_INDEX_PATH)
-#     et = time.time() - st  # Calculate time taken for vectorization
-#     print(f'Time taken for vectorization and saving: {et} seconds.')
-# except Exception as e:
-#     print(f"Error during vectorization or FAISS index saving: {e}", file=sys.stderr)
-
-# alternatively download a preparaed vectorized index from S3 and load the index into vectorstore
-# Import necessary libraries for AWS S3 interaction, file handling, and FAISS vector stores
