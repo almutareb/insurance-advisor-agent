@@ -10,11 +10,11 @@ from langchain.chains import RetrievalQA
 # prompt template
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
+from config import EMBEDDING_MODEL
 
 
 def get_db_retriever(vector_db:str=None):
-    model_name = "sentence-transformers/multi-qa-mpnet-base-dot-v1"
-    embeddings = HuggingFaceHubEmbeddings(repo_id=model_name)
+    embeddings = HuggingFaceHubEmbeddings(repo_id=EMBEDDING_MODEL)
 
     #db = Chroma(persist_directory="./vectorstore/lc-chroma-multi-mpnet-500", embedding_function=embeddings)
     #db.get()
