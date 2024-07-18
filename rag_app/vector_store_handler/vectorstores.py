@@ -79,7 +79,7 @@ class BaseVectorStore(ABC):
         Raises:
             ValueError: If the vector store is not initialized.
         """
-        if not self.vectorstore:
+        if self.vectorstore is None:
             raise ValueError("Vector store not initialized. Call create_vectorstore or load_existing_vectorstore first.")
         return self.vectorstore.similarity_search(query)
 
@@ -115,7 +115,7 @@ class ChromaVectorStore(BaseVectorStore):
         Raises:
             ValueError: If persist_directory is not set.
         """
-        if self.persist_directory:
+        if self.persist_directory is not None:
             self.vectorstore = Chroma(
                 persist_directory=self.persist_directory,
                 embedding_function=self.embeddings
@@ -156,7 +156,7 @@ class FAISSVectorStore(BaseVectorStore):
             ValueError: If persist_directory is not set.
         """
         if self.persist_directory:
-            self.vectorstore = FAISS.load_local(self.persist_directory, self.embeddings)
+            self.vectorstore = FAISS.load_local(self.persist_directory, self.embeddings, allow_dangerous_deserialization=True)
         else:
             raise ValueError("Persist directory is required for loading FAISS.")
 
@@ -167,7 +167,7 @@ class FAISSVectorStore(BaseVectorStore):
         Raises:
             ValueError: If the vector store is not initialized.
         """
-        if not self.vectorstore:
+        if self.vectorstore is not None:
             raise ValueError("Vector store not initialized. Nothing to save.")
         self.vectorstore.save_local(self.persist_directory)
 
