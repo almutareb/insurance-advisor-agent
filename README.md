@@ -12,26 +12,54 @@ pinned: false
 
 # Insurance Advisor Agent(s)
 
-Setup a modular, multi-agent system to handle inqueries to an insurance company. The system utilizes different approachs to find reliable answers regarding the insurance products
+Welcome to the Insurance Advisor Agent(s) project! This project aims to set up a modular, multi-agent system to handle inquiries for an insurance company. The system utilizes various approaches to provide reliable answers regarding insurance products.
 
-1. Improve Vectorstore search
-    Isayah:
-    - multi index (chunks+summaries)
-    - metadata filtering
-    Karan:
-    - re-ranking
-    - hybrid search (bm25+vectorstore)
+## Features
 
-    
-    - HyDE/HyQE
-2. Use ReAct agent instead of chain [DONE]
-    - add tools (Google search engine) [DONE]
-    - query re-writing
-    - ...
-3. Use Corrective RAG
-4. Workflow for the agents
-    - determine funnel stage of customer
-    - different prompts per step
-    - follow a "script"
+### Vectorstore Search
+- **Multi-index (chunks + summaries)**
+- **Metadata Filtering** 
+- **Re-ranking** [DONE]
+- **Hybrid Search (BM25 + Vectorstore)** [DONE]
+- **HyDE/HyQE**
 
-This project is licensed under the MIT License: LICENSE.
+### ReAct Agent
+- **Usage of ReAct Agent instead of Chain** [DONE]
+- **Added Tools (Google Search Engine)** [DONE]
+- **Query Re-writing**
+- **Additional Enhancements**
+
+### Corrective RAG
+- Implementation of Corrective Retrieval-Augmented Generation
+
+### Workflow for Agents
+- Determination of the customer's funnel stage
+- Custom prompts for each step
+- Following a structured "script"
+
+## Getting Started
+
+To get started with this project, follow these steps:
+
+1. **Clone the Repository**:
+   ```sh
+   git clone https://github.com/your-username/insurance-advisor-agent.git
+   cd insurance-advisor-agent
+
+2. **Install Dependencies**:
+   ```sh
+   pip install -r requirements.txt
+
+3. **Run the Application**:
+   ```sh
+   python main.py
+
+## Contributing
+
+We welcome contributions! Please read our Contributing Guide to get started.
+License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+Contact
+
+If you have any questions or suggestions, feel free to open an issue or start a discussion.
