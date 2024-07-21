@@ -2,15 +2,30 @@ import os
 from dotenv import load_dotenv
 from rag_app.database.db_handler import DataBaseHandler
 from langchain_huggingface import HuggingFaceEndpoint
+# from langchain_huggingface import HuggingFaceHubEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()
 
 SQLITE_FILE_NAME = os.getenv('SOURCES_CACHE')
-PERSIST_DIRECTORY = os.getenv('VECTOR_DATABASE_LOCATION')
+VECTOR_DATABASE_LOCATION = os.getenv('VECTOR_DATABASE_LOCATION')
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 SEVEN_B_LLM_MODEL = os.getenv("SEVEN_B_LLM_MODEL")
 BERT_MODEL = os.getenv("BERT_MODEL")
+FAISS_INDEX_PATH = os.getenv("FAISS_INDEX_PATH")
+HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
+
+
+# embeddings = HuggingFaceHubEmbeddings(repo_id=EMBEDDING_MODEL)
+
+model_kwargs = {'device': 'cpu'}
+encode_kwargs = {'normalize_embeddings': False}
+embeddings = HuggingFaceEmbeddings(
+    model_name=EMBEDDING_MODEL,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs
+)
 
 db = DataBaseHandler()
 

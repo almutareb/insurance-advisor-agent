@@ -13,9 +13,9 @@ from rag_app.utils.utils import (
 )
 import chromadb
 import os
-from config import db, PERSIST_DIRECTORY, EMBEDDING_MODEL
+from config import db, VECTOR_DATABASE_LOCATION, EMBEDDING_MODEL
 
-if not os.path.exists(PERSIST_DIRECTORY):
+if not os.path.exists(VECTOR_DATABASE_LOCATION):
     get_chroma_vs()
 
 @tool
@@ -24,7 +24,7 @@ def memory_search(query:str) -> str:
         This is your primary source to start your search with checking what you already have learned from the past, before going online."""
     # Since we have more than one collections we should change the name of this tool
     client = chromadb.PersistentClient(
-     path=PERSIST_DIRECTORY,
+     path=VECTOR_DATABASE_LOCATION,
     )
     
     collection_name = os.getenv('CONVERSATION_COLLECTION_NAME')
@@ -71,7 +71,7 @@ def knowledgeBase_search(query:str) -> str:
     # #collection_name=collection_name,
     # embedding_function=embedding_function,
     # )
-    vector_db = Chroma(persist_directory=PERSIST_DIRECTORY, embedding_function=embedding_function)
+    vector_db = Chroma(persist_directory=VECTOR_DATABASE_LOCATION, embedding_function=embedding_function)
     retriever = vector_db.as_retriever(search_type="mmr", search_kwargs={'k':5, 'fetch_k':10})
     # This is deprecated, changed to invoke
     # LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
