@@ -146,32 +146,43 @@ class ChromaVectorStore(BaseVectorStore):
         query:str,
         num_docs:int=5
         ):
+        """ Re-ranks the similarity search results and returns top-k highest ranked docs
+
+        Args:
+            query (str): The search query
+            path_to_db (str): Path to the vectorstore database
+            embedding_model (str): Embedding model used in the vector store
+            num_docs (int): Number of documents to return
         
-        # Get 10 documents based on similarity search
-        docs = self.vectorstore.similarity_search(query=query, k=10)
+        Returns: A list of documents with the highest rank
+        """
+        
+        # Get k documents based on similarity search
+        sim_docs =  self.vectorstore.similarity_search(query=query, k=10)
         
         # Add the page_content, description and title together
-        passages = [doc.page_content + "\n" + doc.metadata.get('title', "") +"\n"+ doc.metadata.get('description', "") 
-                for doc in docs]
+        passages = [doc.page_content for doc in sim_docs]
+        
         # Prepare the payload
-        inputs = [{"text": query, "text_pair": passage} for passage in passages]
-
-        API_URL = "https://api-inference.huggingface.co/models/deepset/gbert-base-germandpr-reranking"
+        payload = {"inputs": 
+                {"source_sentence": query,
+                    "sentences": passages}}
+        
         headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
+        reranking_hf_url:str = "https://api-inference.huggingface.co/models/sentence-transformers/all-mpnet-base-v2"
 
-        response = requests.post(API_URL, headers=headers, json=inputs)
-        scores = response.json()
+        response = requests.post(url=reranking_hf_url, headers=headers, json=payload)
+        print(f'{response = }')
+        if response.status_code != 200:
+            print('Something went wrong with the response')
+            return
         
-        try:
-            relevance_scores = [item[1]['score'] for item in scores]
-        except ValueError as e:
-            print('Could not get the relevance_scores -> something might be wrong with the json output')
-            return 
+        similarity_scores = response.json()
+        ranked_results = sorted(zip(sim_docs, passages, similarity_scores), key=lambda x: x[2], reverse=True)
+        top_k_results = ranked_results[:num_docs]
+        return [doc for doc, _, _ in top_k_results]
         
-        if relevance_scores:
-            ranked_results = sorted(zip(docs, passages, relevance_scores), key=lambda x: x[2], reverse=True)
-            top_k_results = ranked_results[:num_docs]
-            return [doc for doc, _, _ in top_k_results]
+
 
 class FAISSVectorStore(BaseVectorStore):
     """
@@ -187,7 +198,7 @@ class FAISSVectorStore(BaseVectorStore):
         """
         self.vectorstore = FAISS.from_documents(texts, self.embeddings)
 
-    def load_existing_vectorstore(self):
+    def load_existing_vectorstore(self,allow_dangerous_deserialization:bool=False):
         """
         Load an existing FAISS vector store from the persist directory.
 
@@ -195,7 +206,7 @@ class FAISSVectorStore(BaseVectorStore):
             ValueError: If persist_directory is not set.
         """
         if self.persist_directory:
-            self.vectorstore = FAISS.load_local(self.persist_directory, self.embeddings, allow_dangerous_deserialization=True)
+            self.vectorstore = FAISS.load_local(self.persist_directory, self.embeddings, allow_dangerous_deserialization)
         else:
             raise ValueError("Persist directory is required for loading FAISS.")
 

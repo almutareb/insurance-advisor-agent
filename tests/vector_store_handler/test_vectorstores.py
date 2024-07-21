@@ -1,14 +1,16 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.schema import Document
+# from langchain.embeddings import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+# from langchain.schema import Document
+from langchain_core.documents import Document
 
 # Update the import to reflect your project structure
 from rag_app.vector_store_handler.vectorstores import BaseVectorStore, ChromaVectorStore, FAISSVectorStore
 
 class TestBaseVectorStore(unittest.TestCase):
     def setUp(self):
-        self.embedding_model = MagicMock(spec=OpenAIEmbeddings)
+        self.embedding_model = MagicMock(spec=HuggingFaceEmbeddings)
         self.base_store = BaseVectorStore(self.embedding_model, "test_dir")
 
     def test_init(self):
@@ -34,7 +36,7 @@ class TestBaseVectorStore(unittest.TestCase):
 
 class TestChromaVectorStore(unittest.TestCase):
     def setUp(self):
-        self.embedding_model = MagicMock(spec=OpenAIEmbeddings)
+        self.embedding_model = MagicMock(spec=HuggingFaceEmbeddings)
         self.chroma_store = ChromaVectorStore(self.embedding_model, "test_dir")
 
     @patch('rag_app.vector_store_handler.vectorstores.Chroma')
@@ -62,7 +64,7 @@ class TestChromaVectorStore(unittest.TestCase):
 
 class TestFAISSVectorStore(unittest.TestCase):
     def setUp(self):
-        self.embedding_model = MagicMock(spec=OpenAIEmbeddings)
+        self.embedding_model = MagicMock(spec=HuggingFaceEmbeddings)
         self.faiss_store = FAISSVectorStore(self.embedding_model, "test_dir")
 
     @patch('rag_app.vector_store_handler.vectorstores.FAISS')

@@ -2,7 +2,8 @@ import os
 from dotenv import load_dotenv
 from rag_app.database.db_handler import DataBaseHandler
 from langchain_huggingface import HuggingFaceEndpoint
-from langchain_huggingface import HuggingFaceHubEmbeddings
+# from langchain_huggingface import HuggingFaceHubEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()
 
@@ -16,7 +17,15 @@ HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 
 
-embeddings = HuggingFaceHubEmbeddings(repo_id=EMBEDDING_MODEL)
+# embeddings = HuggingFaceHubEmbeddings(repo_id=EMBEDDING_MODEL)
+
+model_kwargs = {'device': 'cpu'}
+encode_kwargs = {'normalize_embeddings': False}
+embeddings = HuggingFaceEmbeddings(
+    model_name=EMBEDDING_MODEL,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs
+)
 
 db = DataBaseHandler()
 
