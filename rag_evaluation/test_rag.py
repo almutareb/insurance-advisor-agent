@@ -13,7 +13,6 @@ import os
 load_dotenv()
 
 
-
 def run_rag_tests(
     eval_dataset: datasets.Dataset,
     llm,
