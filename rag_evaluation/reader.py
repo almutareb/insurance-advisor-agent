@@ -9,21 +9,6 @@ import os
 
 load_dotenv()
 
-HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
-
-
-repo_id = "HuggingFaceH4/zephyr-7b-beta"
-
-
-READER_LLM = HuggingFaceEndpoint(
-    repo_id=repo_id,
-    task="text-generation",
-    huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN,
-    max_new_tokens=512,
-    top_k=30,
-    temperature=0.1,
-    repetition_penalty=1.03
-)
 
 def answer_with_rag(
     question: str,
@@ -51,6 +36,22 @@ def answer_with_rag(
     return answer, relevant_docs
 
 if __name__ == '__main__':
+    HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
+
+
+    repo_id = "HuggingFaceH4/zephyr-7b-beta"
+
+
+    READER_LLM = HuggingFaceEndpoint(
+        repo_id=repo_id,
+        task="text-generation",
+        huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN,
+        max_new_tokens=512,
+        top_k=30,
+        temperature=0.1,
+        repetition_penalty=1.03
+    )
+
 
     embeddings = HuggingFaceInferenceAPIEmbeddings(
         api_key=HUGGINGFACEHUB_API_TOKEN,
