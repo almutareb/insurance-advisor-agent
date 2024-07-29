@@ -8,8 +8,7 @@ from prompts import (question_groundedness_critique_prompt,
                      question_relevance_critique_prompt, 
                      question_standalone_critique_prompt)
 
-import pandas as pd
-import datasets
+from token_count import count_tokens
 
 
 
@@ -89,6 +88,12 @@ if __name__ == "__main__":
     with open(file='qa_couple_outputs.json', mode ='r', encoding='utf-8') as f:
         loaded_qa_couples = json.load(f)
 
-    get_critique_agent_scores(qa_couples=loaded_qa_couples[280:300], inference_client=llm_client)
+    # get_critique_agent_scores(qa_couples=loaded_qa_couples[280:300], inference_client=llm_client)
 
-# print(eval_dataset)
+    for i, output in enumerate(loaded_qa_couples):
+        if i == 2:
+            break
+        prompt=question_groundedness_critique_prompt.format(context=output["context"], question=output["question"])
+        print(f"Sent tokens: {count_tokens(text=prompt)}")
+        response = call_llm(inference_client=llm_client, prompt=prompt)                
+        print(f"Received tokens: {count_tokens(text=response)}\n")
