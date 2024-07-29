@@ -6,6 +6,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from dotenv import load_dotenv
 import os
+from rag_app.reranking import get_reraked_docs
 
 load_dotenv()
 
@@ -35,30 +36,63 @@ def answer_with_rag(
 
     return answer, relevant_docs
 
+
+def answer_with_rerank_rag(question: str,
+                           llm: LLM,
+                           knowledge_index: VectorStore,
+                           hf_api_key:str,
+                           num_retrieved_docs: int = 30,
+                           num_return_docs: int = 7) -> tuple[str, list]:
+    """Answer a question using RAG and re-ranking with the given knowledge index."""
+    try:
+        reranked_docs = get_reraked_docs(query=question,
+                                        vectorstore=knowledge_index,
+                                        hf_api_key=hf_api_key,
+                                        num_retrieved_docs = num_retrieved_docs,
+                                        num_return_docs= num_return_docs)
+    except Exception as e:
+        print(f"Error in get_reranked_docs: {str(e)}")
+    reranked_docs_content = [doc.page_content for doc in reranked_docs]
+    
+    # Build the final prompt
+    context = "\nExtracted documents:\n"
+    context += "".join([f"Document {str(i)}:::\n" + doc for i, doc in enumerate(reranked_docs_content)])
+
+    final_prompt = RAG_PROMPT_TEMPLATE.format(question=question, context=context)
+
+    try:
+        answer = llm.invoke(final_prompt)
+    except Exception as e:
+        print(f"Error generating answer with LLM: {str(e)}")
+    
+    return answer, reranked_docs_content
+        
+
 if __name__ == '__main__':
-    HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
+    # HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
 
 
-    repo_id = "HuggingFaceH4/zephyr-7b-beta"
+    # repo_id = "HuggingFaceH4/zephyr-7b-beta"
 
 
-    READER_LLM = HuggingFaceEndpoint(
-        repo_id=repo_id,
-        task="text-generation",
-        huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN,
-        max_new_tokens=512,
-        top_k=30,
-        temperature=0.1,
-        repetition_penalty=1.03
-    )
+    # READER_LLM = HuggingFaceEndpoint(
+    #     repo_id=repo_id,
+    #     task="text-generation",
+    #     huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN,
+    #     max_new_tokens=512,
+    #     top_k=30,
+    #     temperature=0.1,
+    #     repetition_penalty=1.03
+    # )
 
 
-    embeddings = HuggingFaceInferenceAPIEmbeddings(
-        api_key=HUGGINGFACEHUB_API_TOKEN,
-        model_name="thenlper/gte-small")
-    loaded_vectorstore = FAISS.load_local(folder_path="website_docs/test", embeddings=embeddings, allow_dangerous_deserialization=True)
+    # embeddings = HuggingFaceInferenceAPIEmbeddings(
+    #     api_key=HUGGINGFACEHUB_API_TOKEN,
+    #     model_name="thenlper/gte-small")
+    # loaded_vectorstore = FAISS.load_local(folder_path="website_docs/test", embeddings=embeddings, allow_dangerous_deserialization=True)
 
-    answer, relevant_docs = answer_with_rag(question='When can I cancel my policy',
-                                            llm=READER_LLM,
-                                            knowledge_index=loaded_vectorstore)
-    print(f"{answer=}\n\n{relevant_docs=}")
+    # answer, relevant_docs = answer_with_rag(question='When can I cancel my policy',
+    #                                         llm=READER_LLM,
+    #                                         knowledge_index=loaded_vectorstore)
+    # print(f"{answer=}\n\n{relevant_docs=}")
+    pass

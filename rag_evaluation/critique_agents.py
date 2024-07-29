@@ -89,6 +89,6 @@ if __name__ == "__main__":
     with open(file='qa_couple_outputs.json', mode ='r', encoding='utf-8') as f:
         loaded_qa_couples = json.load(f)
 
-    get_critique_agent_scores(qa_couples=loaded_qa_couples[10:51], inference_client=llm_client)
+    get_critique_agent_scores(qa_couples=loaded_qa_couples[280:300], inference_client=llm_client)
 
 # print(eval_dataset)
