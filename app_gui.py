@@ -4,6 +4,8 @@ from rag_app.loading_data.load_S3_vector_stores import get_chroma_vs
 from rag_app.loading_data.load_S3_vector_stores import get_chroma_vs
 from rag_app.agents.react_agent import agent_executor
 from config import db
+import os
+port = int(os.getenv("PORT", 8000))
 
 get_chroma_vs()
 
@@ -108,4 +110,4 @@ if __name__ == "__main__":
         clear.click(lambda: None, None, chatbot, queue=False)
 
     # Launch the Gradio demo interface
-    demo.queue().launch(share=False, debug=True)
+    demo.queue().launch(server_name="0.0.0.0", server_port=port, share=False, debug=True)
